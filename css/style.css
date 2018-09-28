@@ -1,5 +1,6 @@
 body {
 	background-color: lightgray;
+	border: 1px solid red;
 }
 
 #top {
@@ -28,4 +29,11 @@ body {
 
 #message {
 	text-align: center;
+}
+
+#handDisplay {
+	position: fixed;
+	bottom: 10px;
+	left: 10px;
+	border: 1px solid cyan;
 }

@@ -123,6 +123,11 @@ const game = {
 			}
 		}
 		this.currentPhase = this.phases[this.currentPhaseIndex];
+		if(this.currentPhase === "Draw") {
+			this.activePlayer.draw();
+			// console.log(player1.hand);
+			// console.log(player2.hand);
+		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
 	updateP1Life() {
@@ -230,7 +235,7 @@ $('#nextPhase').on('click', () => {
 
 game.startGame();
 
-
+//next step: display active player's hand
 
 
 
