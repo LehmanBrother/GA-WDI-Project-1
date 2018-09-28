@@ -63,70 +63,6 @@ const game = {
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
-	p1Library: [
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Mountain","Mountain","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Land("Forest","Forest","Library",false,""),
-			new Creature("Woodland Druid",[0,0,0,0,1,0,0],1,2,"Library",false,false,false,false,0,""),
-			new Creature("Woodland Druid",[0,0,0,0,1,0,0],1,2,"Library",false,false,false,false,0,""),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
-			new Creature("Frenzied Raptor",[0,0,0,1,0,2,0],4,2,"Library",false,false,false,false,0,""),
-			new Creature("Frenzied Raptor",[0,0,0,1,0,2,0],4,2,"Library",false,false,false,false,0,""),
-			new Creature("Lowland Giant",[0,0,0,2,0,2,0],4,3,"Library",false,false,false,false,0,""),
-			new Creature("Lowland Giant",[0,0,0,2,0,2,0],4,3,"Library",false,false,false,false,0,""),
-			new Creature("Hulking Devil",[0,0,0,1,0,3,0],5,2,"Library",false,false,false,false,0,""),
-			new Creature("Hulking Devil",[0,0,0,1,0,3,0],5,2,"Library",false,false,false,false,0,""),
-			new Creature("Rhox Brute",[0,0,0,1,1,2,0],4,4,"Library",false,false,false,false,0,""),
-			new Creature("Rhox Brute",[0,0,0,1,1,2,0],4,4,"Library",false,false,false,false,0,""),
-			new Creature("Ruination Wurm",[0,0,0,1,1,4,0],7,6,"Library",false,false,false,false,0,""),
-			new Creature("Ancient Brontodon",[0,0,0,0,2,6,0],9,9,"Library",false,false,false,false,0,"")
-	],
-	p2Library: [
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Plains","Plains","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Land("Island","Island","Library",false,""),
-			new Creature("Savannah lions",[1,0,0,0,0,0,0],2,1,"Library",false,false,false,false,0,""),
-			new Creature("Savannah lions",[1,0,0,0,0,0,0],2,1,"Library",false,false,false,false,0,""),
-			new Creature("Seagraf Skaab",[0,1,0,0,0,1,0],1,3,"Library",false,false,false,false,0,""),
-			new Creature("Knight of New Benalia",[1,0,0,0,0,1,0],3,1,"Library",false,false,false,false,0,""),
-			new Creature("Knight of New Benalia",[1,0,0,0,0,1,0],3,1,"Library",false,false,false,false,0,""),
-			new Creature("Tolarian Scholar",[0,1,0,0,0,2,0],2,3,"Library",false,false,false,false,0,""),
-			new Creature("Tolarian Scholar",[0,1,0,0,0,2,0],2,3,"Library",false,false,false,false,0,""),
-			new Creature("Those Who Serve",[1,0,0,0,0,2,0],2,4,"Library",false,false,false,false,0,""),
-			new Creature("Those Who Serve",[1,0,0,0,0,2,0],2,4,"Library",false,false,false,false,0,""),
-			new Creature("Wishcoin Crab",[0,1,0,0,0,3,0],2,5,"Library",false,false,false,false,0,""),
-			new Creature("Wishcoin Crab",[0,1,0,0,0,3,0],2,5,"Library",false,false,false,false,0,""),
-			new Creature("Giant Octopus",[0,1,0,0,0,3,0],3,3,"Library",false,false,false,false,0,""),
-			new Creature("Giant Octopus",[0,1,0,0,0,3,0],3,3,"Library",false,false,false,false,0,""),
-			new Creature("Indomitable Ancients",[2,0,0,0,0,2,0],2,10,"Library",false,false,false,false,0,""),
-			new Creature("Thraben Purebloods",[1,0,0,0,0,4,0],3,5,"Library",false,false,false,false,0,""),
-			new Creature("Vizzerdrix",[0,1,0,0,0,6,0],7,7,"Library",false,false,false,false,0,"")
-	],
 	startGame() {
 		player1.life = 20;
 		player2.life = 20;
@@ -135,6 +71,9 @@ const game = {
 		this.updatePhase();
 		this.updateP1Life();
 		this.updateP2Life();
+		this.shuffleLibrary(player1.library);
+		this.shuffleLibrary(player2.library);
+		this.dealHands();
 	},
 	shuffleLibrary(library) {
 		let i = 0;
@@ -145,6 +84,14 @@ const game = {
 			temp = library[i];
 			library[i] = library[j];
 			library[j] = temp;
+		}
+	},
+	dealHands() {
+		for(let i = 0; i < 7; i++) {
+			player1.hand.push(player1.library.shift());
+		}
+		for(let i = 0; i < 7; i++) {
+			player2.hand.push(player2.library.shift());
 		}
 	},
 	updateTurn() {
@@ -180,7 +127,38 @@ const game = {
 
 const player1 = {
 	life: 20,
-	library: [],
+	library: [
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Mountain","Mountain","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Land("Forest","Forest","Library",false,""),
+			new Creature("Woodland Druid",[0,0,0,0,1,0,0],1,2,"Library",false,false,false,false,0,""),
+			new Creature("Woodland Druid",[0,0,0,0,1,0,0],1,2,"Library",false,false,false,false,0,""),
+			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
+			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
+			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
+			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,""),
+			new Creature("Frenzied Raptor",[0,0,0,1,0,2,0],4,2,"Library",false,false,false,false,0,""),
+			new Creature("Frenzied Raptor",[0,0,0,1,0,2,0],4,2,"Library",false,false,false,false,0,""),
+			new Creature("Lowland Giant",[0,0,0,2,0,2,0],4,3,"Library",false,false,false,false,0,""),
+			new Creature("Lowland Giant",[0,0,0,2,0,2,0],4,3,"Library",false,false,false,false,0,""),
+			new Creature("Hulking Devil",[0,0,0,1,0,3,0],5,2,"Library",false,false,false,false,0,""),
+			new Creature("Hulking Devil",[0,0,0,1,0,3,0],5,2,"Library",false,false,false,false,0,""),
+			new Creature("Rhox Brute",[0,0,0,1,1,2,0],4,4,"Library",false,false,false,false,0,""),
+			new Creature("Rhox Brute",[0,0,0,1,1,2,0],4,4,"Library",false,false,false,false,0,""),
+			new Creature("Ruination Wurm",[0,0,0,1,1,4,0],7,6,"Library",false,false,false,false,0,""),
+			new Creature("Ancient Brontodon",[0,0,0,0,2,6,0],9,9,"Library",false,false,false,false,0,"")
+	],
 	hand: [],
 	permanents: [],
 	graveyard: [],
@@ -192,7 +170,38 @@ const player1 = {
 
 const player2 = {
 	life: 20,
-	library: [],
+	library: [
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Plains","Plains","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Land("Island","Island","Library",false,""),
+			new Creature("Savannah lions",[1,0,0,0,0,0,0],2,1,"Library",false,false,false,false,0,""),
+			new Creature("Savannah lions",[1,0,0,0,0,0,0],2,1,"Library",false,false,false,false,0,""),
+			new Creature("Seagraf Skaab",[0,1,0,0,0,1,0],1,3,"Library",false,false,false,false,0,""),
+			new Creature("Knight of New Benalia",[1,0,0,0,0,1,0],3,1,"Library",false,false,false,false,0,""),
+			new Creature("Knight of New Benalia",[1,0,0,0,0,1,0],3,1,"Library",false,false,false,false,0,""),
+			new Creature("Tolarian Scholar",[0,1,0,0,0,2,0],2,3,"Library",false,false,false,false,0,""),
+			new Creature("Tolarian Scholar",[0,1,0,0,0,2,0],2,3,"Library",false,false,false,false,0,""),
+			new Creature("Those Who Serve",[1,0,0,0,0,2,0],2,4,"Library",false,false,false,false,0,""),
+			new Creature("Those Who Serve",[1,0,0,0,0,2,0],2,4,"Library",false,false,false,false,0,""),
+			new Creature("Wishcoin Crab",[0,1,0,0,0,3,0],2,5,"Library",false,false,false,false,0,""),
+			new Creature("Wishcoin Crab",[0,1,0,0,0,3,0],2,5,"Library",false,false,false,false,0,""),
+			new Creature("Giant Octopus",[0,1,0,0,0,3,0],3,3,"Library",false,false,false,false,0,""),
+			new Creature("Giant Octopus",[0,1,0,0,0,3,0],3,3,"Library",false,false,false,false,0,""),
+			new Creature("Indomitable Ancients",[2,0,0,0,0,2,0],2,10,"Library",false,false,false,false,0,""),
+			new Creature("Thraben Purebloods",[1,0,0,0,0,4,0],3,5,"Library",false,false,false,false,0,""),
+			new Creature("Vizzerdrix",[0,1,0,0,0,6,0],7,7,"Library",false,false,false,false,0,"")
+	],
 	hand: [],
 	permanents: [],
 	graveyard: [],
