@@ -74,6 +74,8 @@ const game = {
 		this.shuffleLibrary(player1.library);
 		this.shuffleLibrary(player2.library);
 		this.dealHands();
+		//prompt player 1 to start playing
+		this.message("Press the button to move to the next phase.");
 	},
 	shuffleLibrary(library) {
 		let i = 0;
@@ -113,6 +115,12 @@ const game = {
 			this.currentPhaseIndex++;
 		} else {
 			this.currentPhaseIndex = 0;
+			if(this.turnCounter > 0) {
+				if(this.activePlayer === player2) {
+					this.updateTurn();
+				}
+				this.updateActivePlayer();
+			}
 		}
 		this.currentPhase = this.phases[this.currentPhaseIndex];
 		$('#phase').text("Current Phase: " + this.currentPhase);
@@ -122,6 +130,9 @@ const game = {
 	},
 	updateP2Life() {
 		$('#p2lt').text("P2 Life: " + player2.life);
+	},
+	message(content) {
+		$('#message').text(content);
 	}
 }
 
@@ -160,11 +171,12 @@ const player1 = {
 			new Creature("Ancient Brontodon",[0,0,0,0,2,6,0],9,9,"Library",false,false,false,false,0,"")
 	],
 	hand: [],
-	permanents: [],
+	lands: [],
+	creatures: [],
 	graveyard: [],
 	draw() {
 		console.log("p1 draw");
-		this.hand.push(this.library[0]);
+		this.hand.push(this.library.shift());
 	}
 }
 
@@ -203,13 +215,18 @@ const player2 = {
 			new Creature("Vizzerdrix",[0,1,0,0,0,6,0],7,7,"Library",false,false,false,false,0,"")
 	],
 	hand: [],
-	permanents: [],
+	lands: [],
+	creatures: [],
 	graveyard: [],
 	draw() {
 		console.log("p2 draw");
-		this.hand.push(this.library[0]);
+		this.hand.push(this.library.shift());
 	}
 }
+
+$('#nextPhase').on('click', () => {
+	game.updatePhase();
+})
 
 game.startGame();
 

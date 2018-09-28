@@ -12,3 +12,20 @@ body {
 	height: 38px;
 	width: 130px;
 }
+
+#phases {
+	display: flex;
+	justify-content: space-around;
+	border: 1px solid #00AA00;
+}
+
+#div2 {
+	display: flex;
+	justify-content: space-around;
+	width: 35%;
+	border: 1px solid blue;
+}
+
+#message {
+	text-align: center;
+}
