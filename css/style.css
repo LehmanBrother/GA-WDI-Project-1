@@ -2,6 +2,13 @@ body {
 	background-color: lightgray;
 }
 
+#top {
+	display: flex;
+	justify-content: space-between;
+	border: 1px solid orange;
+}
+
 #logo {
-	width: 15%;
+	height: 38px;
+	width: 130px;
 }

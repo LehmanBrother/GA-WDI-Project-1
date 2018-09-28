@@ -62,11 +62,68 @@ class Creature extends Card {
 const game = {
 	turnCounter: 0,
 	activePlayer: null,
-	phase: null,
-	
+	activePlayerName: null,
+	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
+	currentPhase: this.phases[0],
+	startGame() {
+		this.currentPhase = "Untap";
+		player1.life = 20;
+		player2.life = 20;
+		this.updateTurn();
+		this.updateActivePlayer();
+		this.updateP1Life();
+		this.updateP2Life();
+	},
+	updateTurn() {
+		this.turnCounter++;
+		$('#turn').text("Turn " + this.turnCounter + ":");
+	},
+	updateActivePlayer() {
+		if(this.activePlayer === player1) {
+			this.activePlayer = player2;
+			this.activePlayerName = "Player 2"
+		} else {
+			this.activePlayer = player1;
+			this.activePlayerName = "Player 1"
+		}
+		$('#actP').text(this.activePlayerName);
+	},
+	updatePhase() {
+		
+	},
+	updateP1Life() {
+		$('#p1lt').text("P1 Life: " + player1.life);
+	},
+	updateP2Life() {
+		$('#p2lt').text("P2 Life: " + player2.life);
+	}
 }
 
+const player1 = {
+	life: 20,
+	library: [],
+	hand: [],
+	permanents: [],
+	graveyard: [],
+	draw() {
+		console.log("p1 draw");
+		this.hand.push(this.library[0]);
+	}
+}
 
+const player2 = {
+	life: 20,
+	library: [],
+	hand: [],
+	permanents: [],
+	graveyard: [],
+	draw() {
+		console.log("p2 draw");
+		this.hand.push(this.library[0]);
+	}
+}
+
+game.startGame();
 
 
 
