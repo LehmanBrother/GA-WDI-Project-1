@@ -66,8 +66,9 @@ const game = {
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
+	p1Library: [],
+	p2Library: [],
 	startGame() {
-		this.currentPhase = "Untap";
 		player1.life = 20;
 		player2.life = 20;
 		this.updateTurn();
@@ -76,6 +77,17 @@ const game = {
 		this.updateP1Life();
 		this.updateP2Life();
 	},
+	shuffleLibrary(library) {
+		let i = 0;
+		let j = 0;
+		let temp = null;
+		for(let i = library.length - 1; i > 0; i--) {
+			j = Math.floor(Math.random() * (i + 1))
+			temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
+	}
 	updateTurn() {
 		this.turnCounter++;
 		$('#turn').text("Turn " + this.turnCounter + ":");
