@@ -64,13 +64,15 @@ const game = {
 	activePlayer: null,
 	activePlayerName: null,
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
-	currentPhase: this.phases[0],
+	currentPhaseIndex: -1,
+	currentPhase: null,
 	startGame() {
 		this.currentPhase = "Untap";
 		player1.life = 20;
 		player2.life = 20;
 		this.updateTurn();
 		this.updateActivePlayer();
+		this.updatePhase();
 		this.updateP1Life();
 		this.updateP2Life();
 	},
@@ -89,7 +91,13 @@ const game = {
 		$('#actP').text(this.activePlayerName);
 	},
 	updatePhase() {
-		
+		if(this.currentPhaseIndex < this.phases.length - 1) {
+			this.currentPhaseIndex++;
+		} else {
+			this.currentPhaseIndex = 0;
+		}
+		this.currentPhase = this.phases[this.currentPhaseIndex];
+		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
 	updateP1Life() {
 		$('#p1lt').text("P1 Life: " + player1.life);
