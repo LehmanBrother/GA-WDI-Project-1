@@ -79,6 +79,33 @@ Development Process:
 		-Functions: 
 			-?
 
+Decklists:
+
+Player 1:
+	7 Mountain
+	7 Forest
+	2 Woodland Druid
+	4 Grizzly Bears
+	2 Frenzied Raptor
+	2 Lowland Giant
+	2 Hulking Devil
+	2 Rhox Brute
+	1 Ruination Wurm
+	1 Ancient Brontodon
+
+Player 2:
+	7 Plains
+	7 Island
+	2 Savannah Lions
+	1 Seagraf Skaab
+	2 Knight of New Benalia
+	2 Tolarian Scholar
+	2 Those Who Serve
+	2 Wishcoin Crab
+	2 Giant Octopus
+	1 Indomitable Ancients
+	1 Thraben Purebloods
+	1 Vizzerdrix
 
 
 

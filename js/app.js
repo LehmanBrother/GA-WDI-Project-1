@@ -8,14 +8,18 @@ console.log("Magic: The Gathering");
 // }
 
 class Card {
-
+	constructor(image,zone,visibility) {
+		this.image = image;
+		this.zone = zone;
+		this.visibility = visibility;
+	}
 }
 
 class Land extends Card {
-	constructor(name,subtype,zone,isTapped) {
+	constructor(name,subtype,zone,isTapped, image) {
+		super(zone,image);
 		this.name = name;
 		this.subtype = subtype;
-		this.zone = zone;
 		this.isTapped = isTapped;
 	}
 	play() {
@@ -27,12 +31,12 @@ class Land extends Card {
 }
 
 class Creature extends Card {
-	constructor(name,manaCost,power,toughness,zone,isTapped,isAttacking,isBlocking,isBlocked,currentDamage) {
+	constructor(name,manaCost,power,toughness,zone,isTapped,isAttacking,isBlocking,isBlocked,currentDamage, image) {
+		super(zone,image);
 		this.name = name;
 		this.manaCost = manaCost;
 		this.power = power;
 		this.toughness = toughness;
-		this.zone = zone;
 		this.isTapped = isTapped;
 		this.isAttacking = isAttacking;
 		this.isBlocking = isBlocking;
@@ -66,7 +70,11 @@ const game = {
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
-	p1Library: [],
+	p1Library: [
+			new Land("Mountain","Mountain","Library",false),
+			new Land(),
+			new	
+	],
 	p2Library: [],
 	startGame() {
 		player1.life = 20;
@@ -83,11 +91,11 @@ const game = {
 		let temp = null;
 		for(let i = library.length - 1; i > 0; i--) {
 			j = Math.floor(Math.random() * (i + 1))
-			temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
+			temp = library[i];
+			library[i] = library[j];
+			library[j] = temp;
 		}
-	}
+	},
 	updateTurn() {
 		this.turnCounter++;
 		$('#turn').text("Turn " + this.turnCounter + ":");
