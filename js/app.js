@@ -10,7 +10,7 @@ class Card {
 
 class Land extends Card {
 	constructor(name,subtype,zone,isTapped, image) {
-		super(zone,image);
+		super(image,zone);
 		this.name = name;
 		this.subtype = subtype;
 		this.isTapped = isTapped;
@@ -25,7 +25,7 @@ class Land extends Card {
 
 class Creature extends Card {
 	constructor(name,manaCost,power,toughness,zone,isTapped,isAttacking,isBlocking,isBlocked,currentDamage, image) {
-		super(zone,image);
+		super(image,zone);
 		this.name = name;
 		this.manaCost = manaCost;
 		this.power = power;
@@ -95,6 +95,7 @@ const game = {
 		for(let i = 0; i < 7; i++) {
 			player2.hand.push(player2.library.shift());
 		}
+		player1.showHand();
 	},
 	updateTurn() {
 		this.turnCounter++;
@@ -109,6 +110,7 @@ const game = {
 			this.activePlayerName = "Player 1"
 		}
 		$('#actP').text(this.activePlayerName);
+		//flip battlefield
 	},
 	updatePhase() {
 		if(this.currentPhaseIndex < this.phases.length - 1) {
@@ -182,6 +184,15 @@ const player1 = {
 	draw() {
 		console.log("p1 draw");
 		this.hand.push(this.library.shift());
+	},
+	showHand() {
+		$('img.hand0').attr("src",player1.hand[0].image);
+		$('img.hand1').attr("src",player1.hand[1].image);
+		$('img.hand2').attr("src",player1.hand[2].image);
+		$('img.hand3').attr("src",player1.hand[3].image);
+		$('img.hand4').attr("src",player1.hand[4].image);
+		$('img.hand5').attr("src",player1.hand[5].image);
+		$('img.hand6').attr("src",player1.hand[6].image);
 	}
 }
 
@@ -226,6 +237,15 @@ const player2 = {
 	draw() {
 		console.log("p2 draw");
 		this.hand.push(this.library.shift());
+	},
+	showHand() {
+		$('img.hand0').attr("src",player2.hand[0].image);
+		$('img.hand1').attr("src",player2.hand[1].image);
+		$('img.hand2').attr("src",player2.hand[2].image);
+		$('img.hand3').attr("src",player2.hand[3].image);
+		$('img.hand4').attr("src",player2.hand[4].image);
+		$('img.hand5').attr("src",player2.hand[5].image);
+		$('img.hand6').attr("src",player2.hand[6].image);
 	}
 }
 
