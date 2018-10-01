@@ -183,12 +183,15 @@ const player1 = {
 	hand: [],
 	lands: [],
 	creatures: [],
+	manaPool: [0,0,0,0,0,0],
 	graveyard: [],
 	draw() {
 		console.log("p1 draw");
 		this.hand.push(this.library.shift());
+		this.showHand();
 	},
 	showHand() {
+		$('#handDisplay').empty();
 		for(let i = 0; i < player1.hand.length; i++) {
 			const $cardImg = $('<img>');
 			$cardImg.attr("src",player1.hand[i].image);
@@ -237,12 +240,15 @@ const player2 = {
 	hand: [],
 	lands: [],
 	creatures: [],
+	manaPool: [0,0,0,0,0,0],
 	graveyard: [],
 	draw() {
 		console.log("p2 draw");
 		this.hand.push(this.library.shift());
+		this.showHand();
 	},
 	showHand() {
+		$('#handDisplay').empty();
 		for(let i = 0; i < player2.hand.length; i++) {
 			const $cardImg = $('<img>');
 			$cardImg.attr("src",player1.hand[i].image);
@@ -261,46 +267,48 @@ Listeners
 $('#nextPhase').on('click', () => {
 	game.updatePhase();
 })
-
-// $('.hand').on('click', (e) => {
-// 	//call the play function for the card in question
-// 	const card = game.activePlayer.hand[e.currentTarget.id.substring(e.currentTarget.id.length-1)];
-// 	if(card.constructor.name === "Land") {
-// 		card.zone = "Battlefield";
-// 		$('#battlefield').append('<img class="card" src="'+card.image+'"">');
-// 		e.currentTarget.remove();
-// 		game.activePlayer.hand.splice(e.currentTarget.id.substring(e.currentTarget.id.length-1),1);
-// 		console.log(game.activePlayer.hand);
-// 	}
-// 	console.log(card.zone);
-// })
-
-game.startGame();
-
-
-
-
-
-
-
 	
 $('#handDisplay').on('click', (e) => {
 	const card = game.activePlayer.hand[e.target.id.substring(e.target.id.length-1)];
-	console.log(card);
-	if(card.constructor.name === "Land"/*eventually add requirement that phase be main*/) {
+	if(card.constructor.name === "Land"/*eventually add requirement that phase be main and that a land has not already been played this turn*/) {
 		card.zone = "Battlefield";
-		$('#battlefield').append('<img class="card" src="'+card.image+'"">');
+		const $landImg = $('<img>');
+		$('#landsDisplay').append($landImg);
+		$landImg.attr("src",card.image);
+		$landImg.attr("class","card");
+		game.activePlayer.lands.push(card);
+		$landImg.attr("id","land" + String(game.activePlayer.lands.length-1));
 		e.target.remove();
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
-		$('#handDisplay').empty();
-		console.log(game.activePlayer.hand);
 		game.activePlayer.showHand();
-		console.log(game.activePlayer.hand);
 	}
 	console.log(card.zone);
 })
 
+$('#landsDisplay').on('click', (e) => {
+	const card = game.activePlayer.lands[e.target.id.substring(e.target.id.length-1)];
+	if(card.isTapped === false) {
+		if(card.subtype === "Plains") {
+			game.activePlayer.manaPool[0] += 1;
+		} else if(card.subtype === "Island") {
+			game.activePlayer.manaPool[1] += 1;
+		} else if(card.subtype === "Swamp") {
+			game.activePlayer.manaPool[2] += 1;
+		} else if(card.subtype === "Mountain") {
+			game.activePlayer.manaPool[3] += 1;
+		} else if(card.subtype === "Forest") {
+			game.activePlayer.manaPool[4] += 1;
+		}
+		card.isTapped = true;
+		$(e.target).rotate({
+		      duration:1000,
+		      angle: 0,
+		      animateTo:90
+	    });//currently can cause land to go partially off the screen--should be addressed eventually
+	}
+})
 
+game.startGame();
 
 
 
