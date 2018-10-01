@@ -9,7 +9,7 @@ class Card {
 }
 
 class Land extends Card {
-	constructor(name,subtype,zone,isTapped, image) {
+	constructor(name,subtype,zone,isTapped,image) {
 		super(image,zone);
 		this.name = name;
 		this.subtype = subtype;
@@ -17,6 +17,8 @@ class Land extends Card {
 	}
 	play() {
 		//if zone = hand and game.phase = main1/main2, change zone from hand to bf on click
+		console.log('play a land');
+
 	}
 	tap() {
 		//if zone = battlefield, turn corresponding img element sideways, isTapped = true, add corresponding mana type to mana pool
@@ -24,7 +26,7 @@ class Land extends Card {
 }
 
 class Creature extends Card {
-	constructor(name,manaCost,power,toughness,zone,isTapped,isAttacking,isBlocking,isBlocked,currentDamage, image) {
+	constructor(name,manaCost,power,toughness,zone,isTapped,isAttacking,isBlocking,isBlocked,currentDamage,image) {
 		super(image,zone);
 		this.name = name;
 		this.manaCost = manaCost;
@@ -38,6 +40,7 @@ class Creature extends Card {
 	}
 	play() {
 		//if zone = hand, change zone from hand to bf on click
+		console.log('play a creature');
 	}
 	attack() {
 		//if zone = bf and game.phase = attack, turn corresponding img element sideways, isTapped = true, isAttacking = true
@@ -186,13 +189,11 @@ const player1 = {
 		this.hand.push(this.library.shift());
 	},
 	showHand() {
-		$('img.hand0').attr("src",player1.hand[0].image);
-		$('img.hand1').attr("src",player1.hand[1].image);
-		$('img.hand2').attr("src",player1.hand[2].image);
-		$('img.hand3').attr("src",player1.hand[3].image);
-		$('img.hand4').attr("src",player1.hand[4].image);
-		$('img.hand5').attr("src",player1.hand[5].image);
-		$('img.hand6').attr("src",player1.hand[6].image);
+		for(let i = 0; i < 7; i++) {
+			const $handx = $('img#hand' + i);
+			$handx.attr("src",player1.hand[i].image);
+			player1.hand[i].zone = "Hand";
+		}
 	}
 }
 
@@ -239,23 +240,36 @@ const player2 = {
 		this.hand.push(this.library.shift());
 	},
 	showHand() {
-		$('img.hand0').attr("src",player2.hand[0].image);
-		$('img.hand1').attr("src",player2.hand[1].image);
-		$('img.hand2').attr("src",player2.hand[2].image);
-		$('img.hand3').attr("src",player2.hand[3].image);
-		$('img.hand4').attr("src",player2.hand[4].image);
-		$('img.hand5').attr("src",player2.hand[5].image);
-		$('img.hand6').attr("src",player2.hand[6].image);
+		for(let i = 0; i < 7; i++) {
+			const $handx = $('img#hand' + i);
+			$handx.attr("src",player1.hand[i].image);
+			player1.hand[i].zone = "Hand";
+		}
 	}
 }
+
+/********************
+Listeners
+********************/
 
 $('#nextPhase').on('click', () => {
 	game.updatePhase();
 })
 
+$('.hand').on('click', (e) => {
+	//call the play function for the card in question
+	const card = game.activePlayer.hand[e.currentTarget.id.substring(e.currentTarget.id.length-1)];
+	card.play();
+	if(card.constructor.name === "Land") {
+		card.zone = "Battlefield";
+		$('#battlefield').append('<img class="card" src="'+card.image+'"">');
+	}
+	console.log(card.zone);
+})
+
 game.startGame();
 
-//next step: display active player's hand
+
 
 
 

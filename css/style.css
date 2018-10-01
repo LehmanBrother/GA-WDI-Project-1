@@ -38,7 +38,11 @@ body {
 	border: 1px solid cyan;
 }
 
+#battlefield {
+	border: 1px solid brown;
+}
+
 .card {
-	width: 110px;
-	height: 154px;
+	width: 99px;
+	height: 139px;
 }
