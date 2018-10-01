@@ -66,6 +66,8 @@ const game = {
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
+	payingMana: false,
+	manaReq: [0,0,0,0,0,0,0],
 	startGame() {
 		player1.life = 20;
 		player2.life = 20;
@@ -140,6 +142,15 @@ const game = {
 	},
 	updateP2Life() {
 		$('#p2lt').text("P2 Life: " + player2.life);
+	},
+	updateMana() {
+		$('#wCount').text(": " + game.activePlayer.manaPool[0]);
+		$('#uCount').text(": " + game.activePlayer.manaPool[1]);
+		$('#bCount').text(": " + game.activePlayer.manaPool[2]);
+		$('#rCount').text(": " + game.activePlayer.manaPool[3]);
+		$('#gCount').text(": " + game.activePlayer.manaPool[4]);
+		$('#cCount').text(": " + game.activePlayer.manaPool[5]);
+
 	},
 	message(content) {
 		$('#message').text(content);
@@ -281,6 +292,17 @@ $('#handDisplay').on('click', (e) => {
 		e.target.remove();
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
+	} else if(card.constructor.name === "Creature") {
+		game.message("Click the mana symbols to cast a spell.");
+		game.manaReq = card.manaCost;
+		game.payingMana = true;
+		$('#wReq').text(card.manaCost[0]);
+		$('#uReq').text(card.manaCost[1]);
+		$('#bReq').text(card.manaCost[2]);
+		$('#rReq').text(card.manaCost[3]);
+		$('#gReq').text(card.manaCost[4]);
+		$('#aReq').text(card.manaCost[5]);
+		$('#cReq').text(card.manaCost[6]);
 	}
 	console.log(card.zone);
 })
@@ -311,6 +333,64 @@ $('#landsDisplay').on('click', (e) => {
 		      animateTo:90
 	    });//currently can cause land to go partially off the screen--should be addressed eventually
 	}
+})
+
+//clicking mana symbols will trigger spell cast once all manaReqs are 0
+$('.mana').on('click', (e) => {
+	//reduce corresponding manaReq by 1
+	//if corresponding manaReq = 0, reduce generic req
+	//if all manaReqs are 0, cast spell
+	console.log(e.target.id.substring(0,1));
+	if(e.target.id.substring(0,1) === "w") {
+		if(game.manaReq[0] > 0) {
+			game.manaReq[0]--;
+			game.activePlayer.manaPool[0]--;
+		} else if(game.manaReq[5] > 0) {
+			game.manaReq[5]--;
+			game.activePlayer.manaPool[0]--;
+		}
+	} else if(e.target.id.substring(0,1) === "u") {
+		if(game.manaReq[1] > 0) {
+			game.manaReq[1]--;
+			game.activePlayer.manaPool[1]--;
+		} else if(game.manaReq[5] > 0) {
+			game.manaReq[5]--;
+			game.activePlayer.manaPool[1]--;
+		}
+	} else if(e.target.id.substring(0,1) === "b") {
+		if(game.manaReq[2] > 0) {
+			game.manaReq[2]--;
+			game.activePlayer.manaPool[2]--;
+		} else if(game.manaReq[5] > 0) {
+			game.manaReq[5]--;
+			game.activePlayer.manaPool[2]--;
+		}
+	} else if(e.target.id.substring(0,1) === "r") {
+		if(game.manaReq[3] > 0) {
+			game.manaReq[3]--;
+			game.activePlayer.manaPool[3]--;
+		} else if(game.manaReq[5] > 0) {
+			game.manaReq[5]--;
+			game.activePlayer.manaPool[3]--;
+		}
+	} else if(e.target.id.substring(0,1) === "g") {
+		if(game.manaReq[4] > 0) {
+			game.manaReq[4]--;
+			game.activePlayer.manaPool[4]--;
+		} else if(game.manaReq[5] > 0) {
+			game.manaReq[5]--;
+			game.activePlayer.manaPool[4]--;
+		}
+	} else if(e.target.id.substring(0,1) === "c") {
+		if(game.manaReq[6] > 0) {
+			game.manaReq[6]--;
+			game.activePlayer.manaPool[6]--;
+		} else if(game.manaReq[5] > 0) {
+			game.manaReq[5]--;
+			game.activePlayer.manaPool[6]--;
+		}
+	}
+
 })
 
 game.startGame();

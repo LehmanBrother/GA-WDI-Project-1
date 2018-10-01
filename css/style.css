@@ -23,7 +23,7 @@ body {
 #div2 {
 	display: flex;
 	justify-content: space-around;
-	width: 75%;
+	width: 80%;
 	border: 1px solid blue;
 }
 
@@ -33,6 +33,12 @@ body {
 
 #manaPool {
 	display: flex;
+	align-items: center;
+}
+
+#manaReq {
+	display: flex;
+	justify-content: space-around;
 	align-items: center;
 }
 
