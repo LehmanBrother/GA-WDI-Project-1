@@ -189,7 +189,7 @@ const player1 = {
 		this.hand.push(this.library.shift());
 	},
 	showHand() {
-		for(let i = 0; i < 7; i++) {
+		for(let i = 0; i < player1.hand.length; i++) {
 			const $cardImg = $('<img>');
 			$cardImg.attr("src",player1.hand[i].image);
 			$cardImg.attr("class","card hand");
@@ -243,7 +243,7 @@ const player2 = {
 		this.hand.push(this.library.shift());
 	},
 	showHand() {
-		for(let i = 0; i < 7; i++) {
+		for(let i = 0; i < player2.hand.length; i++) {
 			const $cardImg = $('<img>');
 			$cardImg.attr("src",player1.hand[i].image);
 			$cardImg.attr("class","card hand");
@@ -262,18 +262,18 @@ $('#nextPhase').on('click', () => {
 	game.updatePhase();
 })
 
-$('.hand').on('click', (e) => {
-	//call the play function for the card in question
-	const card = game.activePlayer.hand[e.currentTarget.id.substring(e.currentTarget.id.length-1)];
-	if(card.constructor.name === "Land") {
-		card.zone = "Battlefield";
-		$('#battlefield').append('<img class="card" src="'+card.image+'"">');
-		e.currentTarget.remove();
-		game.activePlayer.hand.splice(e.currentTarget.id.substring(e.currentTarget.id.length-1),1);
-		console.log(game.activePlayer.hand);
-	}
-	console.log(card.zone);
-})
+// $('.hand').on('click', (e) => {
+// 	//call the play function for the card in question
+// 	const card = game.activePlayer.hand[e.currentTarget.id.substring(e.currentTarget.id.length-1)];
+// 	if(card.constructor.name === "Land") {
+// 		card.zone = "Battlefield";
+// 		$('#battlefield').append('<img class="card" src="'+card.image+'"">');
+// 		e.currentTarget.remove();
+// 		game.activePlayer.hand.splice(e.currentTarget.id.substring(e.currentTarget.id.length-1),1);
+// 		console.log(game.activePlayer.hand);
+// 	}
+// 	console.log(card.zone);
+// })
 
 game.startGame();
 
@@ -292,6 +292,9 @@ $('#handDisplay').on('click', (e) => {
 		$('#battlefield').append('<img class="card" src="'+card.image+'"">');
 		e.target.remove();
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
+		$('#handDisplay').empty();
+		console.log(game.activePlayer.hand);
+		game.activePlayer.showHand();
 		console.log(game.activePlayer.hand);
 	}
 	console.log(card.zone);
