@@ -59,6 +59,10 @@ class Creature extends Card {
 	}
 }
 
+/********************
+Game Object	
+********************/
+
 const game = {
 	turnCounter: 0,
 	activePlayer: null,
@@ -67,6 +71,7 @@ const game = {
 	currentPhaseIndex: -1,
 	currentPhase: null,
 	payingMana: false,
+	castingCard: null,
 	manaReq: [0,0,0,0,0,0,0],
 	startGame() {
 		player1.life = 20;
@@ -150,12 +155,22 @@ const game = {
 		$('#rCount').text(": " + game.activePlayer.manaPool[3]);
 		$('#gCount').text(": " + game.activePlayer.manaPool[4]);
 		$('#cCount').text(": " + game.activePlayer.manaPool[5]);
-
+		$('#wReq').text(game.manaReq[0]);
+		$('#uReq').text(game.manaReq[1]);
+		$('#bReq').text(game.manaReq[2]);
+		$('#rReq').text(game.manaReq[3]);
+		$('#gReq').text(game.manaReq[4]);
+		$('#aReq').text(game.manaReq[5]);
+		$('#cReq').text(game.manaReq[6]);
 	},
 	message(content) {
 		$('#message').text(content);
 	}
 }
+
+/********************
+Player Objects	
+********************/
 
 const player1 = {
 	life: 20,
@@ -289,11 +304,11 @@ $('#handDisplay').on('click', (e) => {
 		$landImg.attr("class","card");
 		game.activePlayer.lands.push(card);
 		$landImg.attr("id","land" + String(game.activePlayer.lands.length-1));
-		e.target.remove();
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
 	} else if(card.constructor.name === "Creature") {
 		game.message("Click the mana symbols to cast a spell.");
+		game.castingCard = card;
 		game.manaReq = card.manaCost;
 		game.payingMana = true;
 		$('#wReq').text(card.manaCost[0]);
@@ -312,20 +327,16 @@ $('#landsDisplay').on('click', (e) => {
 	if(card.isTapped === false) {
 		if(card.subtype === "Plains") {
 			game.activePlayer.manaPool[0] += 1;
-			$('#wCount').text(": " + game.activePlayer.manaPool[0])
 		} else if(card.subtype === "Island") {
 			game.activePlayer.manaPool[1] += 1;
-			$('#uCount').text(": " + game.activePlayer.manaPool[1])
 		} else if(card.subtype === "Swamp") {
 			game.activePlayer.manaPool[2] += 1;
-			$('#bCount').text(": " + game.activePlayer.manaPool[2])
 		} else if(card.subtype === "Mountain") {
 			game.activePlayer.manaPool[3] += 1;
-			$('#rCount').text(": " + game.activePlayer.manaPool[3])
 		} else if(card.subtype === "Forest") {
 			game.activePlayer.manaPool[4] += 1;
-			$('#gCount').text(": " + game.activePlayer.manaPool[4])
 		}
+		game.updateMana();
 		card.isTapped = true;
 		$(e.target).rotate({
 		      duration:1000,
@@ -337,8 +348,6 @@ $('#landsDisplay').on('click', (e) => {
 
 //clicking mana symbols will trigger spell cast once all manaReqs are 0
 $('.mana').on('click', (e) => {
-	//reduce corresponding manaReq by 1
-	//if corresponding manaReq = 0, reduce generic req
 	//if all manaReqs are 0, cast spell
 	console.log(e.target.id.substring(0,1));
 	if(e.target.id.substring(0,1) === "w") {
@@ -390,7 +399,19 @@ $('.mana').on('click', (e) => {
 			game.activePlayer.manaPool[6]--;
 		}
 	}
-
+	game.updateMana();
+	if(game.manaReq[0] === 0 && game.manaReq[1] === 0 && game.manaReq[2] === 0 && game.manaReq[3] === 0 && game.manaReq[4] === 0 && game.manaReq[5] === 0 && game. manaReq[6] === 0) {
+		game.castingCard.zone = "Battlefield";
+		const $creatureImg = $('<img>');
+		$('#creaturesDisplay').append($creatureImg);
+		$creatureImg.attr("src",game.castingCard.image);
+		$creatureImg.attr("class","card");
+		game.activePlayer.creatures.push(game.castingCard);
+		$creatureImg.attr("id","creature" + String(game.activePlayer.creatures.length-1));
+		console.log(game.activePlayer.hand.indexOf(game.castingCard));
+		game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
+		game.activePlayer.showHand();
+	}
 })
 
 game.startGame();
