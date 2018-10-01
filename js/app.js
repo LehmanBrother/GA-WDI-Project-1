@@ -290,14 +290,19 @@ $('#landsDisplay').on('click', (e) => {
 	if(card.isTapped === false) {
 		if(card.subtype === "Plains") {
 			game.activePlayer.manaPool[0] += 1;
+			$('#wCount').text(": " + game.activePlayer.manaPool[0])
 		} else if(card.subtype === "Island") {
 			game.activePlayer.manaPool[1] += 1;
+			$('#uCount').text(": " + game.activePlayer.manaPool[1])
 		} else if(card.subtype === "Swamp") {
 			game.activePlayer.manaPool[2] += 1;
+			$('#bCount').text(": " + game.activePlayer.manaPool[2])
 		} else if(card.subtype === "Mountain") {
 			game.activePlayer.manaPool[3] += 1;
+			$('#rCount').text(": " + game.activePlayer.manaPool[3])
 		} else if(card.subtype === "Forest") {
 			game.activePlayer.manaPool[4] += 1;
+			$('#gCount').text(": " + game.activePlayer.manaPool[4])
 		}
 		card.isTapped = true;
 		$(e.target).rotate({

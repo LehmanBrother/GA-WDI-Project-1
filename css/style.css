@@ -23,7 +23,7 @@ body {
 #div2 {
 	display: flex;
 	justify-content: space-around;
-	width: 60%;
+	width: 75%;
 	border: 1px solid blue;
 }
 
@@ -39,6 +39,10 @@ body {
 .mana {
 	width: 30px;
 	height: 30px;
+}
+
+.manaCount {
+	width: 25px;
 }
 
 #handDisplay {
