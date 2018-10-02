@@ -17,13 +17,16 @@ body {
 #phases {
 	display: flex;
 	justify-content: space-around;
+	align-items: center;
+	height: 40px;
 	border: 1px solid #00AA00;
 }
 
 #div2 {
 	display: flex;
 	justify-content: space-around;
-	width: 80%;
+	align-items: center;
+	width: 100%;
 	border: 1px solid blue;
 }
 
@@ -49,6 +52,11 @@ body {
 
 .manaCount {
 	width: 25px;
+}
+
+#switchPlayers {
+	display: flex;
+	align-items: center;
 }
 
 #handDisplay {

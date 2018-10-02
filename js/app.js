@@ -65,6 +65,7 @@ Game Object
 
 const game = {
 	turnCounter: 0,
+	turnPlayer: null,
 	activePlayer: null,
 	activePlayerName: null,
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
@@ -77,6 +78,7 @@ const game = {
 		player1.life = 20;
 		player2.life = 20;
 		this.updateTurn();
+		this.updateTurnPlayer();
 		this.updateActivePlayer();
 		this.updatePhase();
 		this.updateP1Life();
@@ -111,6 +113,16 @@ const game = {
 		this.turnCounter++;
 		$('#turn').text("Turn " + this.turnCounter + ":");
 	},
+	updateTurnPlayer() {
+		if(this.turnPlayer === player1) {
+			this.turnPlayer = player2;
+			this.turnPlayerName = "Player 2"
+		} else {
+			this.turnPlayer = player1;
+			this.turnPlayerName = "Player 1"
+		}
+		$('#turnP').text(this.turnPlayerName);
+	},
 	updateActivePlayer() {
 		if(this.activePlayer === player1) {
 			this.activePlayer = player2;
@@ -119,7 +131,8 @@ const game = {
 			this.activePlayer = player1;
 			this.activePlayerName = "Player 1"
 		}
-		$('#actP').text(this.activePlayerName);
+		$('#actP').text("Active Player: " + this.activePlayerName);
+		this.activePlayer.showHand();
 		//flip battlefield
 	},
 	updatePhase() {
@@ -277,11 +290,11 @@ const player2 = {
 		$('#handDisplay').empty();
 		for(let i = 0; i < player2.hand.length; i++) {
 			const $cardImg = $('<img>');
-			$cardImg.attr("src",player1.hand[i].image);
+			$cardImg.attr("src",player2.hand[i].image);
 			$cardImg.attr("class","card hand");
 			$cardImg.attr("id","hand" + i);
 			$('#handDisplay').append($cardImg);
-			player1.hand[i].zone = "Hand";
+			player2.hand[i].zone = "Hand";
 		}
 	}
 }
@@ -299,7 +312,7 @@ $('#handDisplay').on('click', (e) => {
 	if(card.constructor.name === "Land"/*eventually add requirement that phase be main and that a land has not already been played this turn*/) {
 		card.zone = "Battlefield";
 		const $landImg = $('<img>');
-		$('#landsDisplay').append($landImg);
+		$('#activeLandsDisplay').append($landImg);
 		$landImg.attr("src",card.image);
 		$landImg.attr("class","card");
 		game.activePlayer.lands.push(card);
@@ -319,10 +332,9 @@ $('#handDisplay').on('click', (e) => {
 		$('#aReq').text(card.manaCost[5]);
 		$('#cReq').text(card.manaCost[6]);
 	}
-	console.log(card.zone);
 })
 
-$('#landsDisplay').on('click', (e) => {
+$('#activeLandsDisplay').on('click', (e) => {
 	const card = game.activePlayer.lands[e.target.id.substring(e.target.id.length-1)];
 	if(card.isTapped === false) {
 		if(card.subtype === "Plains") {
@@ -348,8 +360,6 @@ $('#landsDisplay').on('click', (e) => {
 
 //clicking mana symbols will trigger spell cast once all manaReqs are 0
 $('.mana').on('click', (e) => {
-	//if all manaReqs are 0, cast spell
-	console.log(e.target.id.substring(0,1));
 	if(e.target.id.substring(0,1) === "w") {
 		if(game.manaReq[0] > 0) {
 			game.manaReq[0]--;
@@ -403,20 +413,43 @@ $('.mana').on('click', (e) => {
 	if(game.manaReq[0] === 0 && game.manaReq[1] === 0 && game.manaReq[2] === 0 && game.manaReq[3] === 0 && game.manaReq[4] === 0 && game.manaReq[5] === 0 && game. manaReq[6] === 0) {
 		game.castingCard.zone = "Battlefield";
 		const $creatureImg = $('<img>');
-		$('#creaturesDisplay').append($creatureImg);
+		$('#activeCreaturesDisplay').append($creatureImg);
 		$creatureImg.attr("src",game.castingCard.image);
 		$creatureImg.attr("class","card");
 		game.activePlayer.creatures.push(game.castingCard);
 		$creatureImg.attr("id","creature" + String(game.activePlayer.creatures.length-1));
-		console.log(game.activePlayer.hand.indexOf(game.castingCard));
 		game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
 		game.activePlayer.showHand();
 	}
 })
 
+$('#activeCreaturesDisplay').on('click', (e) => {
+	//tap creature, set to attacking (give red border to indicate attacking)
+	//if not blocked, inactive player loses life
+	//later add in attack phase req
+	const card = game.activePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+	if(card.isTapped === false) {
+		card.isAttacking = true;
+		card.isTapped = true;
+		$(e.target).rotate({
+		      duration:1000,
+		      angle: 0,
+		      animateTo:90
+	    });
+	}
+})
+
+$('#switchPlayers').on('click', (e) => {
+	game.updateActivePlayer();
+})
+
 game.startGame();
 
-
+//next step--attacking!
+//further steps:
+	//blocking
+	//switching perspective
+	//phase conditionals
 
 
 
