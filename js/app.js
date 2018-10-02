@@ -70,6 +70,8 @@ const game = {
 	activePlayerName: null,
 	inactivePlayer: null,
 	inactivePlayerName: null,
+	// turnLands: [],
+	// turnCreatures: [],
 	activeLands: [],
 	activeCreatures: [],
 	inactiveLands: [],
@@ -97,6 +99,7 @@ const game = {
 		this.message("Press the button to move to the next phase.");
 	},
 	shuffleLibrary(library) {
+		//fisher-yates shuffle
 		let i = 0;
 		let j = 0;
 		let temp = null;
@@ -195,6 +198,8 @@ const game = {
 			this.turnPlayerName = "Player 1"
 		}
 		$('#turnP').text(this.turnPlayerName);
+		// this.turnLands = this.turnPlayer.lands;
+		// this.turnCreatures = this.turnPlayer.creatures;
 		this.landsPlayed = 0;
 	},
 	updateActivePlayer() {
@@ -226,10 +231,36 @@ const game = {
 				if(this.turnPlayer === player2) {
 					this.updateTurn();
 				}
+				this.activePlayer = this.turnPlayer;
 				this.updateTurnPlayer();
+				this.updateActivePlayer();
 			}
 		}
 		this.currentPhase = this.phases[this.currentPhaseIndex];
+		if(this.currentPhase === "Untap") {
+			//untap turnPlayer's lands
+			for(let i = 0; i < this.turnPlayer.lands.length; i++) {
+				if(this.turnPlayer.lands[i].isTapped) {
+					this.turnPlayer.lands[i].isTapped = false;
+					$('#activeLand' + i).rotate({
+					      duration:1,
+					      angle: 0,
+					      animateTo: 0
+				    });
+				}
+			}
+			//untap turnPlayer's creatures
+			for(let i = 0; i < this.turnPlayer.creatures.length; i++) {
+				if(this.turnPlayer.creatures[i].isTapped) {
+					this.turnPlayer.creatures[i].isTapped = false;
+					$('#activeCreature' + i).rotate({
+					      duration:1,
+					      angle: 0,
+					      animateTo: 0
+				    });
+				}
+			}
+		}
 		if(this.currentPhase === "Draw") {
 			this.turnPlayer.draw();
 			// console.log(player1.hand);
@@ -409,6 +440,7 @@ $('#handDisplay').on('click', (e) => {
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
 		game.activeLands = game.activePlayer.lands;
+		//game.turnLands = game.activePlayer.lands;
 	} else if(card.constructor.name === "Creature") {
 		game.message("Click the mana symbols to cast a spell.");
 		game.castingCard = card;
@@ -518,6 +550,7 @@ $('.mana').on('click', (e) => {
 		game.activePlayer.showHand();
 		game.castingCard = null;
 		game.activeCreatures = game.activePlayer.creatures;
+		//game.turnCreatures = game.activePlayer.creatures;
 	}
 })
 
@@ -552,8 +585,8 @@ game.startGame();
 //next step--attacking!
 //further steps:
 	//blocking
-	//switching perspective
 	//phase conditionals
+		//untap
 
 
 
