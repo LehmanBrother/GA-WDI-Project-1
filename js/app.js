@@ -70,12 +70,14 @@ const game = {
 	activePlayerName: null,
 	inactivePlayer: null,
 	inactivePlayerName: null,
-	// turnLands: [],
-	// turnCreatures: [],
 	activeLands: [],
 	activeCreatures: [],
 	inactiveLands: [],
 	inactiveCreatures: [],
+	// attackers: [],
+	// blockers: [],
+	// currentBlocker: null,
+	combatManager: [],
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
@@ -198,8 +200,6 @@ const game = {
 			this.turnPlayerName = "Player 1"
 		}
 		$('#turnP').text(this.turnPlayerName);
-		// this.turnLands = this.turnPlayer.lands;
-		// this.turnCreatures = this.turnPlayer.creatures;
 		this.landsPlayed = 0;
 	},
 	updateActivePlayer() {
@@ -265,6 +265,20 @@ const game = {
 			this.turnPlayer.draw();
 			// console.log(player1.hand);
 			// console.log(player2.hand);
+		}
+		if((this.currentPhase === "Main 1" || this.currentPhase === "Main 2") && this.landsPlayed === 0) {
+			this.message("Click a land in your hand to play it.");
+		}
+		if(this.currentPhase === "Attack") {
+			this.message("Click creatures you control to attack.");
+		}
+		//set conditional so this only happens if there's an attacking creature
+		if(this.currentPhase === "Block") {
+			this.message("Click a creature you control to block with it.");
+			this.updateActivePlayer();
+		}
+		if(this.currentPhase === "Damage" && this.activePlayerName !== this.turnPlayerName) {
+			this.updateActivePlayer();
 		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
@@ -440,7 +454,6 @@ $('#handDisplay').on('click', (e) => {
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
 		game.activeLands = game.activePlayer.lands;
-		//game.turnLands = game.activePlayer.lands;
 	} else if(card.constructor.name === "Creature") {
 		game.message("Click the mana symbols to cast a spell.");
 		game.castingCard = card;
@@ -550,26 +563,50 @@ $('.mana').on('click', (e) => {
 		game.activePlayer.showHand();
 		game.castingCard = null;
 		game.activeCreatures = game.activePlayer.creatures;
-		//game.turnCreatures = game.activePlayer.creatures;
 	}
 })
 
 /********************
-Attack	
+Attack/Block
 ********************/
 $('#activeCreaturesDisplay').on('click', (e) => {
 	//tap creature, set to attacking (give red border to indicate attacking)
 	//if not blocked, inactive player loses life
 	//later add in attack phase req, summoning sickness
+	//declare card
 	const card = game.activePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
-	if(card.isTapped === false) {
-		card.isAttacking = true;
-		card.isTapped = true;
-		$(e.target).rotate({
-		      duration:1000,
-		      angle: 0,
-		      animateTo:90
-	    });
+	//attack
+	if(game.currentPhase === "Attack") {
+		if(card.isTapped === false) {
+			card.isAttacking = true;
+			card.isTapped = true;
+			//game.attackers.push(card);
+			$(e.target).rotate({
+			      duration:1000,
+			      angle: 0,
+			      animateTo:90
+		    });
+		}
+	}
+	//if phase is block, block
+	if(game.currentPhase === "Block") {
+		console.log("Blocker trigger");
+		if(card.isTapped === false) {
+			//game.blockers.push(card);
+			//game.currentBlocker = card;
+			game.combatManager.push({});
+			game.combatManager[game.combatManager.length-1].blocker = card;
+			console.log("Choose an attacking creature to block");
+		}
+	}
+})
+
+$('#inactiveCreaturesDisplay').on('click', (e) => {
+	if(game.currentPhase === "Block") {
+		console.log("Blocked trigger");
+		const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+		game.combatManager[game.combatManager.length-1].attacker = card;
+		console.log(game.combatManager[game.combatManager.length-1].blocker.name + " blocks " + game.combatManager[game.combatManager.length-1].attacker.name + ".");
 	}
 })
 
@@ -586,7 +623,8 @@ game.startGame();
 //further steps:
 	//blocking
 	//phase conditionals
-		//untap
+		//main2: reset isattacking/isblocking
+		//eot: damage wears off
 
 
 
