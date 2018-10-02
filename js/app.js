@@ -397,7 +397,7 @@ Play lands, initiate casting of creatures
 ********************/
 $('#handDisplay').on('click', (e) => {
 	const card = game.activePlayer.hand[e.target.id.substring(e.target.id.length-1)];
-	if(card.constructor.name === "Land" && game.landsPlayed === 0/*eventually add requirement that phase be main*/) {
+	if(card.constructor.name === "Land" && game.landsPlayed === 0 && (game.currentPhase === "Main 1" || game.currentPhase === "Main 2") && game.turnPlayerName === game.activePlayerName) {
 		game.landsPlayed ++;
 		card.zone = "Battlefield";
 		const $landImg = $('<img>');
