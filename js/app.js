@@ -74,10 +74,8 @@ const game = {
 	activeCreatures: [],
 	inactiveLands: [],
 	inactiveCreatures: [],
-	// attackers: [],
-	// blockers: [],
-	// currentBlocker: null,
-	combatManager: [],
+	attackers: [],
+	blockingManager: [],
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
@@ -580,7 +578,7 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 		if(card.isTapped === false) {
 			card.isAttacking = true;
 			card.isTapped = true;
-			//game.attackers.push(card);
+			game.attackers.push(card);
 			$(e.target).rotate({
 			      duration:1000,
 			      angle: 0,
@@ -591,11 +589,10 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 	//if phase is block, block
 	if(game.currentPhase === "Block") {
 		console.log("Blocker trigger");
-		if(card.isTapped === false) {
-			//game.blockers.push(card);
-			//game.currentBlocker = card;
-			game.combatManager.push({});
-			game.combatManager[game.combatManager.length-1].blocker = card;
+		if(card.isTapped === false && card.isBlocking === false) {
+			card.isBlocking = true;
+			game.blockingManager.push({attacker: null,blocker: null});
+			game.blockingManager[game.blockingManager.length-1].blocker = card;
 			console.log("Choose an attacking creature to block");
 		}
 	}
@@ -604,9 +601,12 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 $('#inactiveCreaturesDisplay').on('click', (e) => {
 	if(game.currentPhase === "Block") {
 		console.log("Blocked trigger");
-		const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
-		game.combatManager[game.combatManager.length-1].attacker = card;
-		console.log(game.combatManager[game.combatManager.length-1].blocker.name + " blocks " + game.combatManager[game.combatManager.length-1].attacker.name + ".");
+		if(game.blockingManager[game.blockingManager.length-1].attacker === null) {
+			const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+			game.blockingManager[game.blockingManager.length-1].attacker = card;
+			card.isBlocked = true;
+			console.log(game.blockingManager[game.blockingManager.length-1].blocker.name + " blocks " + game.blockingManager[game.blockingManager.length-1].attacker.name + ".");
+		}
 	}
 })
 
@@ -625,8 +625,10 @@ game.startGame();
 	//phase conditionals
 		//main2: reset isattacking/isblocking
 		//eot: damage wears off
+	//fix mana system so you can't go negative
 
-
+//much later
+	//when manaReq decreases, so does manaCost--this shouldn't happen
 
 
 
