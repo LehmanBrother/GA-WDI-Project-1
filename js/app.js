@@ -68,9 +68,16 @@ const game = {
 	turnPlayer: null,
 	activePlayer: null,
 	activePlayerName: null,
+	inactivePlayer: null,
+	inactivePlayerName: null,
+	activeLands: [],
+	activeCreatures: [],
+	inactiveLands: [],
+	inactiveCreatures: [],
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
+	landsPlayed: 0,
 	payingMana: false,
 	castingCard: null,
 	manaReq: [0,0,0,0,0,0,0],
@@ -109,6 +116,44 @@ const game = {
 		}
 		player1.showHand();
 	},
+	displayBattlefield() {
+		$('#activeLandsDisplay').empty();
+		$('#inactiveLandsDisplay').empty();
+		$('#activeCreaturesDisplay').empty();
+		$('#inactiveCreaturesDisplay').empty();
+		//update active lands
+		for(let i = 0; i < this.activePlayer.lands.length; i++) {
+			const $cardImg = $('<img>');
+			$cardImg.attr("src",this.activePlayer.lands[i].image);
+			$cardImg.attr("class","card");
+			$cardImg.attr("id","activeLand" + i);
+			$('#activeLandsDisplay').append($cardImg);
+		}
+		//update inactive lands
+		for(let i = 0; i < this.inactivePlayer.lands.length; i++) {
+			const $cardImg = $('<img>');
+			$cardImg.attr("src",this.inactivePlayer.lands[i].image);
+			$cardImg.attr("class","card");
+			$cardImg.attr("id","inactiveLand" + i);
+			$('#inactiveLandsDisplay').append($cardImg);
+		}
+		//update active creatures
+		for(let i = 0; i < this.activePlayer.creatures.length; i++) {
+			const $cardImg = $('<img>');
+			$cardImg.attr("src",this.activePlayer.creatures[i].image);
+			$cardImg.attr("class","card");
+			$cardImg.attr("id","activeCreature" + i);
+			$('#activeCreaturesDisplay').append($cardImg);
+		}
+		//update inactive creatures
+		for(let i = 0; i < this.inactivePlayer.creatures.length; i++) {
+			const $cardImg = $('<img>');
+			$cardImg.attr("src",this.inactivePlayer.creatures[i].image);
+			$cardImg.attr("class","card");
+			$cardImg.attr("id","inactiveCreature" + i);
+			$('#inactiveCreaturesDisplay').append($cardImg);
+		}
+	},
 	updateTurn() {
 		this.turnCounter++;
 		$('#turn').text("Turn " + this.turnCounter + ":");
@@ -122,18 +167,31 @@ const game = {
 			this.turnPlayerName = "Player 1"
 		}
 		$('#turnP').text(this.turnPlayerName);
+		this.landsPlayed = 0;
 	},
 	updateActivePlayer() {
 		if(this.activePlayer === player1) {
 			this.activePlayer = player2;
 			this.activePlayerName = "Player 2"
+			this.inactivePlayer = player1;
+			this.inactivePlayerName = "Player 1";
 		} else {
 			this.activePlayer = player1;
 			this.activePlayerName = "Player 1"
+			this.inactivePlayer = player2;
+			this.inactivePlayerName = "Player 2";
 		}
 		$('#actP').text("Active Player: " + this.activePlayerName);
 		this.activePlayer.showHand();
+		this.activeLands = this.activePlayer.lands;
+		this.activeCreatures = this.activePlayer.creatures;
+		this.inactiveLands = this.inactivePlayer.lands;
+		this.inactiveCreatures = this.inactivePlayer.creatures;
 		//flip battlefield
+			//move active player's lands to inactive land div
+			//move active player's creatures to inactive creature div
+			//move inactive player's lands to active land div
+			//move inactive player's creatures to active creature div
 	},
 	updatePhase() {
 		if(this.currentPhaseIndex < this.phases.length - 1) {
@@ -141,15 +199,15 @@ const game = {
 		} else {
 			this.currentPhaseIndex = 0;
 			if(this.turnCounter > 0) {
-				if(this.activePlayer === player2) {
+				if(this.turnPlayer === player2) {
 					this.updateTurn();
 				}
-				this.updateActivePlayer();
+				this.updateTurnPlayer();
 			}
 		}
 		this.currentPhase = this.phases[this.currentPhaseIndex];
 		if(this.currentPhase === "Draw") {
-			this.activePlayer.draw();
+			this.turnPlayer.draw();
 			// console.log(player1.hand);
 			// console.log(player2.hand);
 		}
@@ -303,22 +361,30 @@ const player2 = {
 Listeners	
 ********************/
 
+/********************
+Move to next phase	
+********************/
 $('#nextPhase').on('click', () => {
 	game.updatePhase();
 })
 	
+/********************
+Play lands, initiate casting of creatures
+********************/
 $('#handDisplay').on('click', (e) => {
 	const card = game.activePlayer.hand[e.target.id.substring(e.target.id.length-1)];
-	if(card.constructor.name === "Land"/*eventually add requirement that phase be main and that a land has not already been played this turn*/) {
+	if(card.constructor.name === "Land" && game.landsPlayed === 0/*eventually add requirement that phase be main*/) {
+		game.landsPlayed ++;
 		card.zone = "Battlefield";
 		const $landImg = $('<img>');
 		$('#activeLandsDisplay').append($landImg);
 		$landImg.attr("src",card.image);
 		$landImg.attr("class","card");
 		game.activePlayer.lands.push(card);
-		$landImg.attr("id","land" + String(game.activePlayer.lands.length-1));
+		$landImg.attr("id","activeLand" + String(game.activePlayer.lands.length-1));
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
+		game.activeLands = game.activePlayer.lands;
 	} else if(card.constructor.name === "Creature") {
 		game.message("Click the mana symbols to cast a spell.");
 		game.castingCard = card;
@@ -334,6 +400,9 @@ $('#handDisplay').on('click', (e) => {
 	}
 })
 
+/********************
+Tap lands for mana
+********************/
 $('#activeLandsDisplay').on('click', (e) => {
 	const card = game.activePlayer.lands[e.target.id.substring(e.target.id.length-1)];
 	if(card.isTapped === false) {
@@ -358,6 +427,9 @@ $('#activeLandsDisplay').on('click', (e) => {
 	}
 })
 
+/********************
+Spend Mana	
+********************/
 //clicking mana symbols will trigger spell cast once all manaReqs are 0
 $('.mana').on('click', (e) => {
 	if(e.target.id.substring(0,1) === "w") {
@@ -417,16 +489,21 @@ $('.mana').on('click', (e) => {
 		$creatureImg.attr("src",game.castingCard.image);
 		$creatureImg.attr("class","card");
 		game.activePlayer.creatures.push(game.castingCard);
-		$creatureImg.attr("id","creature" + String(game.activePlayer.creatures.length-1));
+		$creatureImg.attr("id","activeCreature" + String(game.activePlayer.creatures.length-1));
 		game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
 		game.activePlayer.showHand();
+		game.castingCard = null;
+		game.activeCreatures = game.activePlayer.creatures;
 	}
 })
 
+/********************
+Attack	
+********************/
 $('#activeCreaturesDisplay').on('click', (e) => {
 	//tap creature, set to attacking (give red border to indicate attacking)
 	//if not blocked, inactive player loses life
-	//later add in attack phase req
+	//later add in attack phase req, summoning sickness
 	const card = game.activePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
 	if(card.isTapped === false) {
 		card.isAttacking = true;
@@ -439,6 +516,9 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 	}
 })
 
+/********************
+Change active player
+********************/
 $('#switchPlayers').on('click', (e) => {
 	game.updateActivePlayer();
 })
