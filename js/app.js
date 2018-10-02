@@ -128,6 +128,13 @@ const game = {
 			$cardImg.attr("class","card");
 			$cardImg.attr("id","activeLand" + i);
 			$('#activeLandsDisplay').append($cardImg);
+			if(this.activePlayer.lands[i].isTapped === true) {
+				$cardImg.rotate({
+				      duration:1,
+				      angle: 0,
+				      animateTo:90
+			    });
+			}
 		}
 		//update inactive lands
 		for(let i = 0; i < this.inactivePlayer.lands.length; i++) {
@@ -136,6 +143,13 @@ const game = {
 			$cardImg.attr("class","card");
 			$cardImg.attr("id","inactiveLand" + i);
 			$('#inactiveLandsDisplay').append($cardImg);
+			if(this.inactivePlayer.lands[i].isTapped === true) {
+				$cardImg.rotate({
+				      duration:1,
+				      angle: 0,
+				      animateTo:90
+			    });
+			}
 		}
 		//update active creatures
 		for(let i = 0; i < this.activePlayer.creatures.length; i++) {
@@ -144,6 +158,13 @@ const game = {
 			$cardImg.attr("class","card");
 			$cardImg.attr("id","activeCreature" + i);
 			$('#activeCreaturesDisplay').append($cardImg);
+			if(this.activePlayer.creatures[i].isTapped === true) {
+				$cardImg.rotate({
+				      duration:1,
+				      angle: 0,
+				      animateTo:90
+			    });
+			}
 		}
 		//update inactive creatures
 		for(let i = 0; i < this.inactivePlayer.creatures.length; i++) {
@@ -152,6 +173,13 @@ const game = {
 			$cardImg.attr("class","card");
 			$cardImg.attr("id","inactiveCreature" + i);
 			$('#inactiveCreaturesDisplay').append($cardImg);
+			if(this.inactivePlayer.creatures[i].isTapped === true) {
+				$cardImg.rotate({
+				      duration:1,
+				      angle: 0,
+				      animateTo:90
+			    });
+			}
 		}
 	},
 	updateTurn() {
@@ -187,11 +215,7 @@ const game = {
 		this.activeCreatures = this.activePlayer.creatures;
 		this.inactiveLands = this.inactivePlayer.lands;
 		this.inactiveCreatures = this.inactivePlayer.creatures;
-		//flip battlefield
-			//move active player's lands to inactive land div
-			//move active player's creatures to inactive creature div
-			//move inactive player's lands to active land div
-			//move inactive player's creatures to active creature div
+		this.displayBattlefield();
 	},
 	updatePhase() {
 		if(this.currentPhaseIndex < this.phases.length - 1) {
