@@ -591,9 +591,8 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 		console.log("Blocker trigger");
 		if(card.isTapped === false && card.isBlocking === false) {
 			card.isBlocking = true;
-			game.blockingManager.push({attacker: null,blocker: null});
-			game.blockingManager[game.blockingManager.length-1].blocker = card;
-			console.log("Choose an attacking creature to block");
+			game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length] = card;
+			// console.log(game.blockingManager[game.blockingManager.length-1].attacker + " is blocked by: " + for(let i = 0; i < game.blockingManager[game.blockingManager.length-1].blockers.length; i++){return game.blockingManager[game.blockingManager.length-1].blockers[i] ;});
 		}
 	}
 })
@@ -601,14 +600,17 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 $('#inactiveCreaturesDisplay').on('click', (e) => {
 	if(game.currentPhase === "Block") {
 		console.log("Blocked trigger");
-		if(game.blockingManager[game.blockingManager.length-1].attacker === null) {
-			const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+		const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+		if(card.isAttacking) {
+			game.blockingManager.push({attacker: null,blockers: []});
 			game.blockingManager[game.blockingManager.length-1].attacker = card;
-			card.isBlocked = true;
-			console.log(game.blockingManager[game.blockingManager.length-1].blocker.name + " blocks " + game.blockingManager[game.blockingManager.length-1].attacker.name + ".");
+			console.log("Choose untapped creatures to block this creature.");
 		}
 	}
 })
+//blocking sequence:
+	//click attacker
+		//click any number of blockers to assign them to blockers array in attacker's object
 
 /********************
 Change active player
@@ -622,6 +624,14 @@ game.startGame();
 //next step--attacking!
 //further steps:
 	//blocking
+		//make sure double blocking works; should probably change structure of object created by blocking to:
+			//{
+			// 	attacker: null,
+			// 	blockers: []
+			// }
+		//iterate through blockers for given attacker to add up damage
+		//maybe rewire to choose attacker first and then choose blockers
+		//will need to give player option to assign attacker's damage how they want
 	//phase conditionals
 		//main2: reset isattacking/isblocking
 		//eot: damage wears off
