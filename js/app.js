@@ -82,6 +82,7 @@ const game = {
 	landsPlayed: 0,
 	payingMana: false,
 	castingCard: null,
+	manaIndex: ["w","u","b","r","g","a","c"],
 	manaReq: [0,0,0,0,0,0,0],
 	startGame() {
 		player1.life = 20;
@@ -320,6 +321,13 @@ const game = {
 				    });
 				}
 			}
+			//reset creature damage
+			for(let i = 0; i < this.activeCreatures.length; i++) {
+				this.activeCreatures[i].currentDamage = 0;
+			}
+			for(let i = 0; i < this.inactiveCreatures.length; i++) {
+				this.inactiveCreatures[i].currentDamage = 0;
+			}
 		}
 		if(this.currentPhase === "Draw") {
 			this.turnPlayer.draw();
@@ -351,6 +359,16 @@ const game = {
 		if(this.currentPhase === "Main 2") {
 			this.attackers = [];
 			this.blockingManager = [];
+			for(let i = 0; i < this.activeCreatures.length; i++) {
+				this.activeCreatures[i].isAttacking = false;
+				this.activeCreatures[i].isBlocking = false;
+				this.activeCreatures[i].isBlocked = false;
+			}
+			for(let i = 0; i < this.inactiveCreatures.length; i++) {
+				this.inactiveCreatures[i].isAttacking = false;
+				this.inactiveCreatures[i].isBlocking = false;
+				this.inactiveCreatures[i].isBlocked = false;
+			}
 		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
@@ -573,56 +591,22 @@ Spend Mana
 ********************/
 //clicking mana symbols will trigger spell cast once all manaReqs are 0
 $('.mana').on('click', (e) => {
-	//DRY
-	if(e.target.id.substring(0,1) === "w") {
-		if(game.manaReq[0] > 0) {
-			game.manaReq[0]--;
-			game.activePlayer.manaPool[0]--;
+	const spendMana = () => {
+		const color = e.target.id.substring(0,1);
+		console.log(color);
+		const index = game.manaIndex.indexOf(color);
+		console.log(index);
+		//if required mana of clicked color > 0, reduce mana pool and mana req of that color
+		if(game.manaReq[index] > 0) {
+			game.manaReq[index]--;
+			game.activePlayer.manaPool[index]--;
+		//otherwise, reduce generic mana pool and mana req
 		} else if(game.manaReq[5] > 0) {
 			game.manaReq[5]--;
-			game.activePlayer.manaPool[0]--;
-		}
-	} else if(e.target.id.substring(0,1) === "u") {
-		if(game.manaReq[1] > 0) {
-			game.manaReq[1]--;
-			game.activePlayer.manaPool[1]--;
-		} else if(game.manaReq[5] > 0) {
-			game.manaReq[5]--;
-			game.activePlayer.manaPool[1]--;
-		}
-	} else if(e.target.id.substring(0,1) === "b") {
-		if(game.manaReq[2] > 0) {
-			game.manaReq[2]--;
-			game.activePlayer.manaPool[2]--;
-		} else if(game.manaReq[5] > 0) {
-			game.manaReq[5]--;
-			game.activePlayer.manaPool[2]--;
-		}
-	} else if(e.target.id.substring(0,1) === "r") {
-		if(game.manaReq[3] > 0) {
-			game.manaReq[3]--;
-			game.activePlayer.manaPool[3]--;
-		} else if(game.manaReq[5] > 0) {
-			game.manaReq[5]--;
-			game.activePlayer.manaPool[3]--;
-		}
-	} else if(e.target.id.substring(0,1) === "g") {
-		if(game.manaReq[4] > 0) {
-			game.manaReq[4]--;
-			game.activePlayer.manaPool[4]--;
-		} else if(game.manaReq[5] > 0) {
-			game.manaReq[5]--;
-			game.activePlayer.manaPool[4]--;
-		}
-	} else if(e.target.id.substring(0,1) === "c") {
-		if(game.manaReq[6] > 0) {
-			game.manaReq[6]--;
-			game.activePlayer.manaPool[6]--;
-		} else if(game.manaReq[5] > 0) {
-			game.manaReq[5]--;
-			game.activePlayer.manaPool[6]--;
+			game.activePlayer.manaPool[index]--;
 		}
 	}
+	spendMana();
 	game.updateMana();
 	if(game.manaReq[0] === 0 && game.manaReq[1] === 0 && game.manaReq[2] === 0 && game.manaReq[3] === 0 && game.manaReq[4] === 0 && game.manaReq[5] === 0 && game. manaReq[6] === 0) {
 		game.castingCard.zone = "Battlefield";
@@ -717,12 +701,6 @@ game.startGame();
 
 //next step--attacking!
 //further steps:
-	//blocking
-		//iterate through blockers for given attacker to add up damage
-		//maybe rewire to choose attacker first and then choose blockers
-	//phase conditionals
-		//main2: reset isattacking/isblocking
-		//eot: damage wears off
 	//fix mana system so you can't go negative
 	//DRY things up
 
