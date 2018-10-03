@@ -123,6 +123,7 @@ const game = {
 		$('#inactiveLandsDisplay').empty();
 		$('#activeCreaturesDisplay').empty();
 		$('#inactiveCreaturesDisplay').empty();
+		//DRY
 		//update active lands
 		for(let i = 0; i < this.activePlayer.lands.length; i++) {
 			const $cardImg = $('<img>');
@@ -184,12 +185,32 @@ const game = {
 			}
 		}
 	},
-	assignDamage() {
-		console.log("Damage assignment");
-		//iterate through blockingManager, assigning blocker damage to attacker
-		for(let i = 0; i < this.blockingManager.length; i++) {
-
+	assignBlockingDamage() {
+		console.log("Assign blocking damage");
+		//iterate through damageManager, assigning blocker damage to attacker
+		for(let i = 0; i < this.damageManager.length; i++) {
+			for(let j = 0; j < this.damageManager[i].blockers.length; j++) {
+				this.damageManager[i].attacker.currentDamage += this.damageManager[i].blockers[j].power;
+			}
 		}
+		//assign attacker damage to blockers in order
+		for(let i = 0; i < this.damageManager.length; i++) {
+			let damageToDeal = this.damageManager[i].attacker.power;
+			for(let j = 0; j < this.damageManager[i].blockers.length; j++) {
+				//if dTD < toughness, deal dTD and set dTD to 0
+				if(damageToDeal < this.damageManager[i].blockers[j].toughness) {
+					this.damageManager[i].blockers[j].currentDamage += damageToDeal;
+					damageToDeal = 0;
+				} else if(damageToDeal > this.damageManager[i].blockers[j].toughness) {
+					this.damageManager[i].blockers[j].currentDamage += this.damageManager[i].blockers[j].toughness;
+					damageToDeal -= this.damageManager[i].blockers[j].toughness;
+				}
+			}
+		}
+	},
+	assignUnblockedDamage() {
+		console.log("Assign unblocked damage");
+		//assign unblocked damage
 	},
 	updateTurn() {
 		this.turnCounter++;
@@ -227,6 +248,7 @@ const game = {
 		this.displayBattlefield();
 	},
 	updatePhase() {
+		//advance currentPhaseIndex
 		if(this.currentPhaseIndex < this.phases.length - 1) {
 			this.currentPhaseIndex++;
 		} else {
@@ -240,6 +262,7 @@ const game = {
 				this.updateActivePlayer();
 			}
 		}
+		//update currentPhase
 		this.currentPhase = this.phases[this.currentPhaseIndex];
 		if(this.currentPhase === "Untap") {
 			//untap turnPlayer's lands
@@ -287,9 +310,9 @@ const game = {
 				$('#endBlocks').remove();
 			})
 		}
-		if(this.currentPhase === "Damage" && this.activePlayer.name !== this.turnPlayer.name) {
-			this.updateActivePlayer();
-			this.assignDamage();
+		if(this.currentPhase === "Damage") {
+			this.assignBlockingDamage();
+			this.assignUnblockedDamage();
 		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
@@ -514,6 +537,7 @@ Spend Mana
 ********************/
 //clicking mana symbols will trigger spell cast once all manaReqs are 0
 $('.mana').on('click', (e) => {
+	//DRY
 	if(e.target.id.substring(0,1) === "w") {
 		if(game.manaReq[0] > 0) {
 			game.manaReq[0]--;
@@ -639,7 +663,7 @@ $('#inactiveCreaturesDisplay').on('click', (e) => {
 	if(game.currentPhase === "Block" && game.activePlayer.name === game.turnPlayer.name) {
 		console.log("Blocker order trigger");
 		const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
-		//add something else in here to guarantee that blocker and attacker are matched
+		//eventually add something else in here to guarantee that blocker and attacker are matched
 		if(card.isBlocking) {
 			game.damageManager[game.damageManager.length-1].blockers[game.damageManager[game.damageManager.length-1].blockers.length] = card;
 		}
@@ -660,7 +684,6 @@ game.startGame();
 	//blocking
 		//iterate through blockers for given attacker to add up damage
 		//maybe rewire to choose attacker first and then choose blockers
-		//will need to give player option to assign attacker's damage how they want
 	//phase conditionals
 		//main2: reset isattacking/isblocking
 		//eot: damage wears off
