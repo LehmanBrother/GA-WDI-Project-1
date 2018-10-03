@@ -272,7 +272,7 @@ const game = {
 		}
 		//set conditional so this only happens if there's an attacking creature
 		if(this.currentPhase === "Block") {
-			this.message("Click a creature you control to block with it.");
+			this.message("Click an attacking creature to select it for blocking, then click your creatures to block.");
 			this.updateActivePlayer();
 		}
 		if(this.currentPhase === "Damage" && this.activePlayerName !== this.turnPlayerName) {
@@ -592,7 +592,7 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 		if(card.isTapped === false && card.isBlocking === false) {
 			card.isBlocking = true;
 			game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length] = card;
-			// console.log(game.blockingManager[game.blockingManager.length-1].attacker + " is blocked by: " + for(let i = 0; i < game.blockingManager[game.blockingManager.length-1].blockers.length; i++){return game.blockingManager[game.blockingManager.length-1].blockers[i] ;});
+			console.log(game.blockingManager[game.blockingManager.length-1].attacker + " is blocked by: " + game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length-1].name);
 		}
 	}
 })
