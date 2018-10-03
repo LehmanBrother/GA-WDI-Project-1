@@ -227,7 +227,7 @@ const game = {
 		this.updateLife();
 		this.unblockedAttackers = [];
 		if(this.inactivePlayer.life <= 0) {
-			console.log(this.activePlayer.name + " wins!");
+			this.message(this.activePlayer.name + " wins!");
 		}
 	},
 	checkLethalDamage() {
@@ -547,7 +547,7 @@ $('#handDisplay').on('click', (e) => {
 	} else if(card.constructor.name === "Creature") {
 		game.message("Click the mana symbols to cast a spell.");
 		game.castingCard = card;
-		game.manaReq = card.manaCost;
+		game.manaReq = Array.from(card.manaCost);
 		game.payingMana = true;
 		$('#wReq').text(card.manaCost[0]);
 		$('#uReq').text(card.manaCost[1]);
@@ -618,6 +618,7 @@ $('.mana').on('click', (e) => {
 			game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
 			game.activePlayer.showHand();
 			game.castingCard = null;
+			game.payingMana = false;
 			game.activeCreatures = game.activePlayer.creatures;
 		}
 	}
@@ -702,9 +703,10 @@ game.startGame();
 //next step--attacking!
 //further steps:
 	//DRY things up
+	//Make it obvious to player when a block has happened/generally make message updates more consistent (replace important console logs with messages)
 
 //much later
-	//when manaReq decreases, so does manaCost--this shouldn't happen
+	//add: vigilance; lifelink; trample; first strike; flying
 
 
 
