@@ -73,6 +73,7 @@ const game = {
 	inactiveLands: [],
 	inactiveCreatures: [],
 	attackers: [],
+	unblockedAttackers: [],
 	blockingManager: [],
 	damageManager: [],
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
@@ -89,8 +90,7 @@ const game = {
 		this.updateTurnPlayer();
 		this.updateActivePlayer();
 		this.updatePhase();
-		this.updateP1Life();
-		this.updateP2Life();
+		this.updateLife();
 		this.shuffleLibrary(player1.library);
 		this.shuffleLibrary(player2.library);
 		this.dealHands();
@@ -118,11 +118,9 @@ const game = {
 		}
 		player1.showHand();
 	},
-	displayBattlefield() {
+	displayLands() {
 		$('#activeLandsDisplay').empty();
 		$('#inactiveLandsDisplay').empty();
-		$('#activeCreaturesDisplay').empty();
-		$('#inactiveCreaturesDisplay').empty();
 		//DRY
 		//update active lands
 		for(let i = 0; i < this.activePlayer.lands.length; i++) {
@@ -154,6 +152,10 @@ const game = {
 			    });
 			}
 		}
+	},
+	displayCreatures() {
+		$('#activeCreaturesDisplay').empty();
+		$('#inactiveCreaturesDisplay').empty();
 		//update active creatures
 		for(let i = 0; i < this.activePlayer.creatures.length; i++) {
 			const $cardImg = $('<img>');
@@ -197,10 +199,11 @@ const game = {
 		for(let i = 0; i < this.damageManager.length; i++) {
 			let damageToDeal = this.damageManager[i].attacker.power;
 			for(let j = 0; j < this.damageManager[i].blockers.length; j++) {
-				//if dTD < toughness, deal dTD and set dTD to 0
-				if(damageToDeal < this.damageManager[i].blockers[j].toughness) {
+				//if dTD <= toughness or only one blocker, deal dTD and set dTD to 0
+				if(damageToDeal <= this.damageManager[i].blockers[j].toughness || this.damageManager[i].blockers.length === 1) {
 					this.damageManager[i].blockers[j].currentDamage += damageToDeal;
 					damageToDeal = 0;
+				//else deal toughness
 				} else if(damageToDeal > this.damageManager[i].blockers[j].toughness) {
 					this.damageManager[i].blockers[j].currentDamage += this.damageManager[i].blockers[j].toughness;
 					damageToDeal -= this.damageManager[i].blockers[j].toughness;
@@ -210,7 +213,36 @@ const game = {
 	},
 	assignUnblockedDamage() {
 		console.log("Assign unblocked damage");
-		//assign unblocked damage
+		//populate array of unblocked attackers
+		for(let i = 0; i < this.attackers.length; i++) {
+			if(this.attackers[i].isBlocked === false) {
+				this.unblockedAttackers.push(this.attackers[i]);
+			}
+		}
+		//subtract power from defender's life
+		for(let i = 0; i < this.unblockedAttackers.length; i++) {
+			this.inactivePlayer.life -= this.unblockedAttackers[i].power;
+		}
+		this.updateLife();
+		this.unblockedAttackers = [];
+		if(this.inactivePlayer.life <= 0) {
+			console.log(this.activePlayer.name + " wins!");
+		}
+	},
+	checkLethalDamage() {
+		//for each creature array, remove all creatures with damage >= toughness
+		for(let i = this.activeCreatures.length-1; i >= 0; i--) {
+			if(this.activeCreatures[i].currentDamage >= this.activeCreatures[i].toughness) {
+				this.activeCreatures.splice(i,1);
+			}
+		}
+		for(let i = this.inactiveCreatures.length-1; i >= 0; i--) {
+			if(this.inactiveCreatures[i].currentDamage >= this.inactiveCreatures[i].toughness) {
+				this.inactiveCreatures.splice(i,1);
+			}
+		}
+		//update divs; probably split into lands and creatures so lands don't twitch
+		this.displayCreatures();
 	},
 	updateTurn() {
 		this.turnCounter++;
@@ -245,7 +277,8 @@ const game = {
 		this.activeCreatures = this.activePlayer.creatures;
 		this.inactiveLands = this.inactivePlayer.lands;
 		this.inactiveCreatures = this.inactivePlayer.creatures;
-		this.displayBattlefield();
+		this.displayLands();
+		this.displayCreatures();
 	},
 	updatePhase() {
 		//advance currentPhaseIndex
@@ -313,13 +346,16 @@ const game = {
 		if(this.currentPhase === "Damage") {
 			this.assignBlockingDamage();
 			this.assignUnblockedDamage();
+			this.checkLethalDamage();
+		}
+		if(this.currentPhase === "Main 2") {
+			this.attackers = [];
+			this.blockingManager = [];
 		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
-	updateP1Life() {
+	updateLife() {
 		$('#p1lt').text("P1 Life: " + player1.life);
-	},
-	updateP2Life() {
 		$('#p2lt').text("P2 Life: " + player2.life);
 	},
 	updateMana() {
