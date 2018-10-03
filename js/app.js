@@ -591,35 +591,35 @@ Spend Mana
 ********************/
 //clicking mana symbols will trigger spell cast once all manaReqs are 0
 $('.mana').on('click', (e) => {
-	const spendMana = () => {
-		const color = e.target.id.substring(0,1);
-		console.log(color);
-		const index = game.manaIndex.indexOf(color);
-		console.log(index);
-		//if required mana of clicked color > 0, reduce mana pool and mana req of that color
-		if(game.manaReq[index] > 0) {
-			game.manaReq[index]--;
-			game.activePlayer.manaPool[index]--;
-		//otherwise, reduce generic mana pool and mana req
-		} else if(game.manaReq[5] > 0) {
-			game.manaReq[5]--;
-			game.activePlayer.manaPool[index]--;
+	const color = e.target.id.substring(0,1);
+	const index = game.manaIndex.indexOf(color);
+	if(game.activePlayer.manaPool[index] > 0) {
+		const spendMana = () => {
+			//if required mana of clicked color > 0, reduce mana pool and mana req of that color
+			if(game.manaReq[index] > 0) {
+				game.manaReq[index]--;
+				game.activePlayer.manaPool[index]--;
+			//otherwise, reduce generic mana pool and mana req
+			} else if(game.manaReq[5] > 0) {
+				game.manaReq[5]--;
+				game.activePlayer.manaPool[index]--;
+			}
 		}
-	}
-	spendMana();
-	game.updateMana();
-	if(game.manaReq[0] === 0 && game.manaReq[1] === 0 && game.manaReq[2] === 0 && game.manaReq[3] === 0 && game.manaReq[4] === 0 && game.manaReq[5] === 0 && game. manaReq[6] === 0) {
-		game.castingCard.zone = "Battlefield";
-		const $creatureImg = $('<img>');
-		$('#activeCreaturesDisplay').append($creatureImg);
-		$creatureImg.attr("src",game.castingCard.image);
-		$creatureImg.attr("class","card");
-		game.activePlayer.creatures.push(game.castingCard);
-		$creatureImg.attr("id","activeCreature" + String(game.activePlayer.creatures.length-1));
-		game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
-		game.activePlayer.showHand();
-		game.castingCard = null;
-		game.activeCreatures = game.activePlayer.creatures;
+		spendMana();
+		game.updateMana();
+		if(game.manaReq[0] === 0 && game.manaReq[1] === 0 && game.manaReq[2] === 0 && game.manaReq[3] === 0 && game.manaReq[4] === 0 && game.manaReq[5] === 0 && game. manaReq[6] === 0) {
+			game.castingCard.zone = "Battlefield";
+			const $creatureImg = $('<img>');
+			$('#activeCreaturesDisplay').append($creatureImg);
+			$creatureImg.attr("src",game.castingCard.image);
+			$creatureImg.attr("class","card");
+			game.activePlayer.creatures.push(game.castingCard);
+			$creatureImg.attr("id","activeCreature" + String(game.activePlayer.creatures.length-1));
+			game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
+			game.activePlayer.showHand();
+			game.castingCard = null;
+			game.activeCreatures = game.activePlayer.creatures;
+		}
 	}
 })
 
@@ -701,7 +701,6 @@ game.startGame();
 
 //next step--attacking!
 //further steps:
-	//fix mana system so you can't go negative
 	//DRY things up
 
 //much later
