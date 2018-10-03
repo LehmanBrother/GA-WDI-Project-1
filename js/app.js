@@ -1,64 +1,5 @@
 console.log("Magic: The Gathering");
 
-class Card {
-	constructor(image,zone,visibility) {
-		this.image = image;
-		this.zone = zone;
-		this.visibility = visibility;
-	}
-}
-
-class Land extends Card {
-	constructor(name,subtype,zone,isTapped,image) {
-		super(image,zone);
-		this.name = name;
-		this.subtype = subtype;
-		this.isTapped = isTapped;
-	}
-	play() {
-		//if zone = hand and game.phase = main1/main2, change zone from hand to bf on click
-		console.log('play a land');
-
-	}
-	tap() {
-		//if zone = battlefield, turn corresponding img element sideways, isTapped = true, add corresponding mana type to mana pool
-	}
-}
-
-class Creature extends Card {
-	constructor(name,manaCost,power,toughness,zone,isTapped,isAttacking,isBlocking,isBlocked,currentDamage,image) {
-		super(image,zone);
-		this.name = name;
-		this.manaCost = manaCost;
-		this.power = power;
-		this.toughness = toughness;
-		this.isTapped = isTapped;
-		this.isAttacking = isAttacking;
-		this.isBlocking = isBlocking;
-		this.isBlocked = isBlocked;
-		this.currentDamage = currentDamage;
-	}
-	play() {
-		//if zone = hand, change zone from hand to bf on click
-		console.log('play a creature');
-	}
-	attack() {
-		//if zone = bf and game.phase = attack, turn corresponding img element sideways, isTapped = true, isAttacking = true
-	}
-	block(attacker) {
-		//if zone = bf and game.phase = block and isTapped = false, move corresponding img element to attacker
-	}
-	dealDamage() {
-		//if attacking and unblocked, reduce opponent's life total by power
-		//if attacking and blocked, divide damage between blockers (i.e. change currentDamage values)
-		//if blocking, deal damage to attacher (change cD value)
-		//if cD >= toughness, die
-	}
-	die() {
-		//move to graveyard or disappear
-	}
-}
-
 /********************
 Game Object	
 ********************/
@@ -403,38 +344,7 @@ Player Objects
 const player1 = {
 	name: "Player 1",
 	life: 20,
-	library: [
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Land("Forest","Forest","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373625"),
-			new Creature("Woodland Druid",[0,0,0,0,1,0,0],1,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=29772&type=card"),
-			new Creature("Woodland Druid",[0,0,0,0,1,0,0],1,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=29772&type=card"),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=129586&type=card"),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=129586&type=card"),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=129586&type=card"),
-			new Creature("Grizzly Bears",[0,0,0,0,1,1,0],2,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=129586&type=card"),
-			new Creature("Frenzied Raptor",[0,0,0,1,0,2,0],4,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=435300&type=card"),
-			new Creature("Frenzied Raptor",[0,0,0,1,0,2,0],4,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=435300&type=card"),
-			new Creature("Lowland Giant",[0,0,0,2,0,2,0],4,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=4829&type=card"),
-			new Creature("Lowland Giant",[0,0,0,2,0,2,0],4,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=4829&type=card"),
-			new Creature("Hulking Devil",[0,0,0,1,0,3,0],5,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=409919&type=card"),
-			new Creature("Hulking Devil",[0,0,0,1,0,3,0],5,2,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=409919&type=card"),
-			new Creature("Rhox Brute",[0,0,0,1,1,2,0],4,4,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=189650&type=card"),
-			new Creature("Rhox Brute",[0,0,0,1,1,2,0],4,4,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=189650&type=card"),
-			new Creature("Ruination Wurm",[0,0,0,1,1,4,0],7,6,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=366235&type=card"),
-			new Creature("Ancient Brontodon",[0,0,0,0,2,6,0],9,9,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=435330&type=card")
-	],
+	library: rgInit,
 	hand: [],
 	lands: [],
 	creatures: [],
@@ -461,38 +371,7 @@ const player1 = {
 const player2 = {
 	name: "Player 2",
 	life: 20,
-	library: [
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Land("Island","Island","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=435426"),
-			new Creature("Savannah lions",[1,0,0,0,0,0,0],2,1,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=442022&type=card"),
-			new Creature("Savannah lions",[1,0,0,0,0,0,0],2,1,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=442022&type=card"),
-			new Creature("Seagraf Skaab",[0,1,0,0,0,1,0],1,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=409827&type=card"),
-			new Creature("Knight of New Benalia",[1,0,0,0,0,1,0],3,1,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=442912&type=card"),
-			new Creature("Knight of New Benalia",[1,0,0,0,0,1,0],3,1,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=442912&type=card"),
-			new Creature("Tolarian Scholar",[0,1,0,0,0,2,0],2,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=447216&type=card"),
-			new Creature("Tolarian Scholar",[0,1,0,0,0,2,0],2,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=447216&type=card"),
-			new Creature("Those Who Serve",[1,0,0,0,0,2,0],2,4,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=426734&type=card"),
-			new Creature("Those Who Serve",[1,0,0,0,0,2,0],2,4,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=426734&type=card"),
-			new Creature("Wishcoin Crab",[0,1,0,0,0,3,0],2,5,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=452810&type=card"),
-			new Creature("Wishcoin Crab",[0,1,0,0,0,3,0],2,5,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=452810&type=card"),
-			new Creature("Giant Octopus",[0,1,0,0,0,3,0],3,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=83104&type=card"),
-			new Creature("Giant Octopus",[0,1,0,0,0,3,0],3,3,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=83104&type=card"),
-			new Creature("Indomitable Ancients",[2,0,0,0,0,2,0],2,10,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=152967&type=card"),
-			new Creature("Thraben Purebloods",[1,0,0,0,0,4,0],3,5,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=230625&type=card"),
-			new Creature("Vizzerdrix",[0,1,0,0,0,6,0],7,7,"Library",false,false,false,false,0,"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=94911&type=card")
-	],
+	library: uwInit,
 	hand: [],
 	lands: [],
 	creatures: [],
@@ -703,10 +582,12 @@ game.startGame();
 //next step--attacking!
 //further steps:
 	//DRY things up
+		//player class, store libraries elsewhere
 	//Make it obvious to player when a block has happened/generally make message updates more consistent (replace important console logs with messages)
 
 //much later
 	//add: vigilance; lifelink; trample; first strike; flying
+	//have creatures go to graveyard when they die
 
 
 
