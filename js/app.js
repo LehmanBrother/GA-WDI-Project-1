@@ -67,15 +67,14 @@ const game = {
 	turnCounter: 0,
 	turnPlayer: null,
 	activePlayer: null,
-	activePlayerName: null,
 	inactivePlayer: null,
-	inactivePlayerName: null,
 	activeLands: [],
 	activeCreatures: [],
 	inactiveLands: [],
 	inactiveCreatures: [],
 	attackers: [],
 	blockingManager: [],
+	damageManager: [],
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
@@ -185,6 +184,13 @@ const game = {
 			}
 		}
 	},
+	assignDamage() {
+		console.log("Damage assignment");
+		//iterate through blockingManager, assigning blocker damage to attacker
+		for(let i = 0; i < this.blockingManager.length; i++) {
+
+		}
+	},
 	updateTurn() {
 		this.turnCounter++;
 		$('#turn').text("Turn " + this.turnCounter + ":");
@@ -192,27 +198,27 @@ const game = {
 	updateTurnPlayer() {
 		if(this.turnPlayer === player1) {
 			this.turnPlayer = player2;
-			this.turnPlayerName = "Player 2"
+			this.turnPlayer.name = "Player 2"
 		} else {
 			this.turnPlayer = player1;
-			this.turnPlayerName = "Player 1"
+			this.turnPlayer.name = "Player 1"
 		}
-		$('#turnP').text(this.turnPlayerName);
+		$('#turnP').text(this.turnPlayer.name);
 		this.landsPlayed = 0;
 	},
 	updateActivePlayer() {
 		if(this.activePlayer === player1) {
 			this.activePlayer = player2;
-			this.activePlayerName = "Player 2"
+			this.activePlayer.name = "Player 2"
 			this.inactivePlayer = player1;
-			this.inactivePlayerName = "Player 1";
+			this.inactivePlayer.name = "Player 1";
 		} else {
 			this.activePlayer = player1;
-			this.activePlayerName = "Player 1"
+			this.activePlayer.name = "Player 1"
 			this.inactivePlayer = player2;
-			this.inactivePlayerName = "Player 2";
+			this.inactivePlayer.name = "Player 2";
 		}
-		$('#actP').text("Active Player: " + this.activePlayerName);
+		$('#actP').text("Active Player: " + this.activePlayer.name);
 		this.activePlayer.showHand();
 		this.activeLands = this.activePlayer.lands;
 		this.activeCreatures = this.activePlayer.creatures;
@@ -271,12 +277,19 @@ const game = {
 			this.message("Click creatures you control to attack.");
 		}
 		//set conditional so this only happens if there's an attacking creature
-		if(this.currentPhase === "Block") {
+		if(this.currentPhase === "Block" && this.attackers.length > 0) {
 			this.message("Click an attacking creature to select it for blocking, then click your creatures to block.");
 			this.updateActivePlayer();
+			$('#battlefield').prepend('<button id="endBlocks">Done Blocking</button>');
+			$('#endBlocks').on('click', () => {
+				this.updateActivePlayer();
+				this.message("Determine order of blockers by clicking your blocked creature, then its blockers in the order you wish to deal them damage.")
+				$('#endBlocks').remove();
+			})
 		}
-		if(this.currentPhase === "Damage" && this.activePlayerName !== this.turnPlayerName) {
+		if(this.currentPhase === "Damage" && this.activePlayer.name !== this.turnPlayer.name) {
 			this.updateActivePlayer();
+			this.assignDamage();
 		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
@@ -311,6 +324,7 @@ Player Objects
 ********************/
 
 const player1 = {
+	name: "Player 1",
 	life: 20,
 	library: [
 			new Land("Mountain","Mountain","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=386610"),
@@ -368,6 +382,7 @@ const player1 = {
 }
 
 const player2 = {
+	name: "Player 2",
 	life: 20,
 	library: [
 			new Land("Plains","Plains","Library",false,"http://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=373582"),
@@ -440,7 +455,7 @@ Play lands, initiate casting of creatures
 ********************/
 $('#handDisplay').on('click', (e) => {
 	const card = game.activePlayer.hand[e.target.id.substring(e.target.id.length-1)];
-	if(card.constructor.name === "Land" && game.landsPlayed === 0 && (game.currentPhase === "Main 1" || game.currentPhase === "Main 2") && game.turnPlayerName === game.activePlayerName) {
+	if(card.constructor.name === "Land" && game.landsPlayed === 0 && (game.currentPhase === "Main 1" || game.currentPhase === "Main 2") && game.turnPlayer.name === game.activePlayer.name) {
 		game.landsPlayed ++;
 		card.zone = "Battlefield";
 		const $landImg = $('<img>');
@@ -570,7 +585,7 @@ Attack/Block
 $('#activeCreaturesDisplay').on('click', (e) => {
 	//tap creature, set to attacking (give red border to indicate attacking)
 	//if not blocked, inactive player loses life
-	//later add in attack phase req, summoning sickness
+	//later add in summoning sickness
 	//declare card
 	const card = game.activePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
 	//attack
@@ -586,19 +601,32 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 		    });
 		}
 	}
-	//if phase is block, block
-	if(game.currentPhase === "Block") {
+	//block
+	if(game.currentPhase === "Block" && game.activePlayer.name !== game.turnPlayer.name) {
 		console.log("Blocker trigger");
 		if(card.isTapped === false && card.isBlocking === false) {
 			card.isBlocking = true;
 			game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length] = card;
-			console.log(game.blockingManager[game.blockingManager.length-1].attacker + " is blocked by: " + game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length-1].name);
+			game.blockingManager[game.blockingManager.length-1].attacker.isBlocked = true;
+			console.log(game.blockingManager[game.blockingManager.length-1].attacker.name + " is blocked by: " + game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length-1].name);
+		}
+	}
+	//assign attacker damage
+		//click blocked creature, then click its blockers in damage order
+	if(game.currentPhase === "Block" && game.activePlayer.name === game.turnPlayer.name) {
+		console.log("Begin determining attacker damage");
+		const card = game.activePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+		if(card.isAttacking && card.isBlocked) {
+			game.damageManager.push({attacker: null,blockers: []});
+			game.damageManager[game.damageManager.length-1].attacker = card;
+			game.message("Now click this attacker's blockers in the order in which to damage them.")
 		}
 	}
 })
 
 $('#inactiveCreaturesDisplay').on('click', (e) => {
-	if(game.currentPhase === "Block") {
+	//select attacker to block
+	if(game.currentPhase === "Block" && game.activePlayer.name !== game.turnPlayer.name) {
 		console.log("Blocked trigger");
 		const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
 		if(card.isAttacking) {
@@ -607,10 +635,16 @@ $('#inactiveCreaturesDisplay').on('click', (e) => {
 			console.log("Choose untapped creatures to block this creature.");
 		}
 	}
+	//determine order of blocker damage
+	if(game.currentPhase === "Block" && game.activePlayer.name === game.turnPlayer.name) {
+		console.log("Blocker order trigger");
+		const card = game.inactivePlayer.creatures[e.target.id.substring(e.target.id.length-1)];
+		//add something else in here to guarantee that blocker and attacker are matched
+		if(card.isBlocking) {
+			game.damageManager[game.damageManager.length-1].blockers[game.damageManager[game.damageManager.length-1].blockers.length] = card;
+		}
+	}
 })
-//blocking sequence:
-	//click attacker
-		//click any number of blockers to assign them to blockers array in attacker's object
 
 /********************
 Change active player
@@ -624,11 +658,6 @@ game.startGame();
 //next step--attacking!
 //further steps:
 	//blocking
-		//make sure double blocking works; should probably change structure of object created by blocking to:
-			//{
-			// 	attacker: null,
-			// 	blockers: []
-			// }
 		//iterate through blockers for given attacker to add up damage
 		//maybe rewire to choose attacker first and then choose blockers
 		//will need to give player option to assign attacker's damage how they want
@@ -636,6 +665,7 @@ game.startGame();
 		//main2: reset isattacking/isblocking
 		//eot: damage wears off
 	//fix mana system so you can't go negative
+	//DRY things up
 
 //much later
 	//when manaReq decreases, so does manaCost--this shouldn't happen
