@@ -14,9 +14,11 @@ const game = {
 	inactiveLands: [],
 	inactiveCreatures: [],
 	attackers: [],
+	availableBlockers: [],
 	unblockedAttackers: [],
 	blockingManager: [],
 	damageManager: [],
+	currentLifeLost: 0,
 	phases: ["Untap","Draw","Main 1","Attack","Block","Damage","Main 2","End"],
 	currentPhaseIndex: -1,
 	currentPhase: null,
@@ -37,7 +39,7 @@ const game = {
 		this.shuffleLibrary(player1.library);
 		this.shuffleLibrary(player2.library);
 		this.dealHands();
-		//prompt player 1 to start playing
+		$('#inactiveCreaturesDisplay').html("<h2>Welcome to Magic: The Gathering! If you don't know how to play, you should probably visit <a href='https://magic.wizards.com/en/gameplay/how-to-play'>this site</a> (focus on the parts about creatures and lands). Otherwise, click the 'Next Phase' button to start!");
 		this.message("Press the button to move to the next phase.");
 	},
 	shuffleLibrary(library) {
@@ -164,8 +166,9 @@ const game = {
 		}
 		//subtract power from defender's life
 		for(let i = 0; i < this.unblockedAttackers.length; i++) {
-			this.inactivePlayer.life -= this.unblockedAttackers[i].power;
+			this.currentLifeLost += this.unblockedAttackers[i].power;
 		}
+		this.inactivePlayer.life -= this.currentLifeLost;
 		this.updateLife();
 		this.unblockedAttackers = [];
 		if(this.inactivePlayer.life <= 0) {
@@ -270,11 +273,14 @@ const game = {
 			for(let i = 0; i < this.inactiveCreatures.length; i++) {
 				this.inactiveCreatures[i].currentDamage = 0;
 			}
+			this.message("Press the button to move to the next phase.");
 			$('#end').css("border", "none");
 			$('#untap').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "Draw") {
+			$('h2').remove();
 			this.turnPlayer.draw();
+			this.message("Press the button to move to the next phase.");
 			$('#untap').css("border", "none");
 			$('#draw').css("border", "3px solid steelblue");
 		}
@@ -282,16 +288,22 @@ const game = {
 			$('#draw').css("border", "none");
 			$('#main1').css("border", "3px solid steelblue");
 		}
-		if((this.currentPhase === "Main 1" || this.currentPhase === "Main 2") && this.landsPlayed === 0) {
-			this.message("Click a land in your hand to play it.");
+		if(this.currentPhase === "Main 1" || this.currentPhase === "Main 2") {
+			this.message("If you haven't played a land this turn, click a land in your hand to play it.");
 		}
 		if(this.currentPhase === "Attack") {
 			this.message("Click creatures you control to attack.");
 			$('#main1').css("border", "none");
 			$('#attack').css("border", "3px solid steelblue");
 		}
-		//set conditional so this only happens if there's an attacking creature
-		if(this.currentPhase === "Block" && this.attackers.length > 0) {
+		if(this.currentPhase === "Block") {
+			for(let i = 0; i < this.inactiveCreatures.length; i++) {
+				this.availableBlockers.push(this.inactiveCreatures[i]);
+			}
+			$('#attack').css("border", "none");
+			$('#block').css("border", "3px solid steelblue");
+		}
+		if(this.currentPhase === "Block" && this.attackers.length > 0 && this.availableBlockers.length > 0) {
 			this.message("Click an attacking creature to select it for blocking, then click your creatures to block.");
 			this.updateActivePlayer();
 			$('#battlefield').prepend('<button id="endBlocks">Done Blocking</button>');
@@ -300,15 +312,16 @@ const game = {
 				this.message("Determine order of blockers by clicking your blocked creature, then its blockers in the order you wish to deal them damage.")
 				$('#endBlocks').remove();
 			})
-		}
-		if(this.currentPhase === "Block") {
-			$('#attack').css("border", "none");
-			$('#block').css("border", "3px solid steelblue");
+		} else if (this.currentPhase === "Block") {
+			this.message("Press the button to move to the next phase.");
 		}
 		if(this.currentPhase === "Damage") {
 			this.assignBlockingDamage();
 			this.assignUnblockedDamage();
 			this.checkLethalDamage();
+			if(this.inactivePlayer.life > 0) {
+				this.message(this.inactivePlayer + " lost " + this.currentLifeLost + ". Press the button to move to the next phase.");
+			}
 			$('#block').css("border", "none");
 			$('#damage').css("border", "3px solid steelblue");
 		}
@@ -329,6 +342,7 @@ const game = {
 			$('#main2').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "End") {
+			this.message("Press the button to move to the next phase.");
 			$('#main2').css("border", "none");
 			$('#end').css("border", "3px solid steelblue");
 		}
@@ -458,8 +472,9 @@ $('#handDisplay').on('click', (e) => {
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
 		game.activeLands = game.activePlayer.lands;
+		game.message("If you have enough lands in play, tap them to cast a creature.")
 	} else if(card.constructor.name === "Creature") {
-		game.message("Click the mana symbols to cast a spell.");
+		game.message("Click the mana symbols to cast a creature.");
 		game.castingCard = card;
 		game.manaReq = Array.from(card.manaCost);
 		game.payingMana = true;
@@ -496,7 +511,8 @@ $('#activeLandsDisplay').on('click', (e) => {
 		      duration:1000,
 		      angle: 0,
 		      animateTo:90
-	    });//currently can cause land to go partially off the screen--should be addressed eventually
+	    });
+	    game.message("If you have enough mana, click a creature in your hand to cast it.")
 	}
 })
 
@@ -567,7 +583,7 @@ $('#activeCreaturesDisplay').on('click', (e) => {
 			card.isBlocking = true;
 			game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length] = card;
 			game.blockingManager[game.blockingManager.length-1].attacker.isBlocked = true;
-			console.log(game.blockingManager[game.blockingManager.length-1].attacker.name + " is blocked by: " + game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length-1].name);
+			game.message(game.blockingManager[game.blockingManager.length-1].attacker.name + " is blocked by: " + game.blockingManager[game.blockingManager.length-1].blockers[game.blockingManager[game.blockingManager.length-1].blockers.length-1].name);
 		}
 	}
 	//assign attacker damage
@@ -591,7 +607,7 @@ $('#inactiveCreaturesDisplay').on('click', (e) => {
 		if(card.isAttacking) {
 			game.blockingManager.push({attacker: null,blockers: []});
 			game.blockingManager[game.blockingManager.length-1].attacker = card;
-			console.log("Choose untapped creatures to block this creature.");
+			game.message("Choose untapped creatures to block this creature.");
 		}
 	}
 	//determine order of blocker damage
@@ -650,9 +666,9 @@ game.startGame();
 
 //further steps:
 	//Make it obvious to player when a block has happened/generally make message updates more consistent (replace important console logs with messages)
-	//Highlight phases
 
 //much later
+	//mulligans
 	//add: vigilance; lifelink; trample; first strike; flying
 	//have creatures go to graveyard when they die
 	//cards to represent libraries
