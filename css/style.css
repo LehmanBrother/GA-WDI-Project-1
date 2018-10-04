@@ -1,12 +1,26 @@
 body {
 	background-color: lightgray;
-	border: 1px solid red;
+}
+
+button {
+	background-color: #696969;
+	color: #DCDCDC;
+	width: 60px;
+	border: 2px solid black;
+	border-radius: 5px;
+}
+
+#dash {
+	background-color: cornsilk;
+	border: 5px solid black;
+	border-radius: 10px;
 }
 
 #top {
 	display: flex;
 	justify-content: space-between;
-	border: 1px solid orange;
+	padding-right: 5px;
+	border-bottom: 2px solid black;
 }
 
 #logo {
@@ -19,15 +33,28 @@ body {
 	justify-content: space-around;
 	align-items: center;
 	height: 40px;
-	border: 1px solid #00AA00;
+	border-bottom: 2px solid black;
+}
+
+.phase {
+	padding: 5px;
+	border-radius: 3px;
 }
 
 #div2 {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
-	width: 100%;
-	border: 1px solid blue;
+	width: 99%;
+	margin: 0 auto;
+}
+
+#msgDiv {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	width: 25%;
+	padding: 0px 3px 0px 3px;
 }
 
 #message {
@@ -35,8 +62,16 @@ body {
 	font-size: 15px;
 }
 
+#mana {
+	width: 50%;
+	padding: 0px 3px 0px 3px;
+	border-left: 2px solid black;
+	border-right: 2px solid black;
+}
+
 #manaPool {
 	display: flex;
+	justify-content: space-around;
 	align-items: center;
 }
 
@@ -57,26 +92,35 @@ body {
 
 #switchPlayers {
 	display: flex;
+	width: 25%;
+	justify-content: space-around;
 	align-items: center;
+	padding: 0px 3px 0px 3px;
 }
 
 #handDisplay {
+	display: flex;
 	position: fixed;
 	bottom: 10px;
 	left: 10px;
-	border: 1px solid cyan;
 }
 
 #battlefield {
-	border: 1px solid brown;
+	
 }
 
 #inactiveLandsDisplay, #inactiveCreaturesDisplay, #activeCreaturesDisplay, #activeLandsDisplay {
 	display: flex;
 	justify-content: center;
+	height: 120px;
+}
+
+#inactiveCreaturesDisplay {
+	border-bottom: 2px solid black;
 }
 
 .card {
 	width: 80px;
 	height: 112px;
+	padding: 2px;
 }

@@ -269,17 +269,25 @@ const game = {
 			for(let i = 0; i < this.inactiveCreatures.length; i++) {
 				this.inactiveCreatures[i].currentDamage = 0;
 			}
+			$('#end').css("border", "none");
+			$('#untap').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "Draw") {
 			this.turnPlayer.draw();
-			// console.log(player1.hand);
-			// console.log(player2.hand);
+			$('#untap').css("border", "none");
+			$('#draw').css("border", "3px solid steelblue");
+		}
+		if(this.currentPhase === "Main 1") {
+			$('#draw').css("border", "none");
+			$('#main1').css("border", "3px solid steelblue");
 		}
 		if((this.currentPhase === "Main 1" || this.currentPhase === "Main 2") && this.landsPlayed === 0) {
 			this.message("Click a land in your hand to play it.");
 		}
 		if(this.currentPhase === "Attack") {
 			this.message("Click creatures you control to attack.");
+			$('#main1').css("border", "none");
+			$('#attack').css("border", "3px solid steelblue");
 		}
 		//set conditional so this only happens if there's an attacking creature
 		if(this.currentPhase === "Block" && this.attackers.length > 0) {
@@ -292,10 +300,16 @@ const game = {
 				$('#endBlocks').remove();
 			})
 		}
+		if(this.currentPhase === "Block") {
+			$('#attack').css("border", "none");
+			$('#block').css("border", "3px solid steelblue");
+		}
 		if(this.currentPhase === "Damage") {
 			this.assignBlockingDamage();
 			this.assignUnblockedDamage();
 			this.checkLethalDamage();
+			$('#block').css("border", "none");
+			$('#damage').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "Main 2") {
 			this.attackers = [];
@@ -310,6 +324,12 @@ const game = {
 				this.inactiveCreatures[i].isBlocking = false;
 				this.inactiveCreatures[i].isBlocked = false;
 			}
+			$('#damage').css("border", "none");
+			$('#main2').css("border", "3px solid steelblue");
+		}
+		if(this.currentPhase === "End") {
+			$('#main2').css("border", "none");
+			$('#end').css("border", "3px solid steelblue");
 		}
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
@@ -351,7 +371,6 @@ const player1 = {
 	manaPool: [0,0,0,0,0,0],
 	graveyard: [],
 	draw() {
-		console.log("p1 draw");
 		this.hand.push(this.library.shift());
 		this.showHand();
 	},
@@ -378,7 +397,6 @@ const player2 = {
 	manaPool: [0,0,0,0,0,0],
 	graveyard: [],
 	draw() {
-		console.log("p2 draw");
 		this.hand.push(this.library.shift());
 		this.showHand();
 	},
@@ -577,17 +595,23 @@ $('#switchPlayers').on('click', (e) => {
 	game.updateActivePlayer();
 })
 
+/********************
+Hover to expand size of card
+********************/
+
+
+
 game.startGame();
 
-//next step--attacking!
 //further steps:
-	//DRY things up
-		//player class, store libraries elsewhere
 	//Make it obvious to player when a block has happened/generally make message updates more consistent (replace important console logs with messages)
+	//Highlight phases
 
 //much later
 	//add: vigilance; lifelink; trample; first strike; flying
 	//have creatures go to graveyard when they die
+	//cards to represent libraries
+	//animation to move cards around
 
 
 
