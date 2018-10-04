@@ -25,6 +25,7 @@ const game = {
 	castingCard: null,
 	manaIndex: ["w","u","b","r","g","a","c"],
 	manaReq: [0,0,0,0,0,0,0],
+	handHidden: false,
 	startGame() {
 		player1.life = 20;
 		player2.life = 20;
@@ -609,6 +610,21 @@ Change active player
 ********************/
 $('#switchPlayers').on('click', (e) => {
 	game.updateActivePlayer();
+})
+
+/********************
+Hide hand
+********************/
+$('#hideHand').on('click', () => {
+	if(game.handHidden === false) {
+		$('.hand').css('opacity', '0');
+		game.handHidden = true;
+		$('#hideHand').text('Show Hand');
+	} else {
+		$('.hand').css('opacity', '1');
+		game.handHidden = false;
+		$('#hideHand').text('Hide Hand');
+	}
 })
 
 /********************
