@@ -98,6 +98,13 @@ button {
 	padding: 0px 3px 0px 3px;
 }
 
+#welcome {
+	background-color: cornsilk;
+	text-align: center;
+	border: 5px solid black;
+	border-radius: 10px;
+}
+
 #handDisplay {
 	display: flex;
 	position: fixed;

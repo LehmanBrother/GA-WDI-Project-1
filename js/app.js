@@ -39,7 +39,8 @@ const game = {
 		this.shuffleLibrary(player1.library);
 		this.shuffleLibrary(player2.library);
 		this.dealHands();
-		$('#inactiveCreaturesDisplay').html("<h2>Welcome to Magic: The Gathering! If you don't know how to play, you should probably visit <a href='https://magic.wizards.com/en/gameplay/how-to-play'>this site</a> (focus on the parts about creatures and lands). Otherwise, click the 'Next Phase' button to start!");
+		$('#inactiveCreaturesDisplay').prepend("<div id='welcome'></div>");
+		$('#welcome').html("<h2>Welcome to Magic: The Gathering! If you don't know how to play, you should probably visit <a href='https://magic.wizards.com/en/gameplay/how-to-play'>this site</a> (focus on the parts about lands, creatures, and combat). Otherwise, click the 'Next Phase' button to start!");
 		this.message("Press the button to move to the next phase.");
 	},
 	shuffleLibrary(library) {
@@ -81,6 +82,14 @@ const game = {
 				      animateTo:90
 			    });
 			}
+			$cardImg.on('mouseenter', () => {
+				$cardImg.css('width', '160');
+				$cardImg.css('height', '224');
+			});
+			$cardImg.on('mouseleave', () => {
+				$cardImg.css('width', '80');
+				$cardImg.css('height', '112');
+			});
 		}
 		//update inactive lands
 		for(let i = 0; i < this.inactivePlayer.lands.length; i++) {
@@ -96,6 +105,14 @@ const game = {
 				      animateTo:90
 			    });
 			}
+			$cardImg.on('mouseenter', () => {
+				$cardImg.css('width', '160');
+				$cardImg.css('height', '224');
+			});
+			$cardImg.on('mouseleave', () => {
+				$cardImg.css('width', '80');
+				$cardImg.css('height', '112');
+			});
 		}
 	},
 	displayCreatures() {
@@ -115,6 +132,14 @@ const game = {
 				      animateTo:90
 			    });
 			}
+			$cardImg.on('mouseenter', () => {
+				$cardImg.css('width', '160');
+				$cardImg.css('height', '224');
+			});
+			$cardImg.on('mouseleave', () => {
+				$cardImg.css('width', '80');
+				$cardImg.css('height', '112');
+			});
 		}
 		//update inactive creatures
 		for(let i = 0; i < this.inactivePlayer.creatures.length; i++) {
@@ -130,6 +155,14 @@ const game = {
 				      animateTo:90
 			    });
 			}
+			$cardImg.on('mouseenter', () => {
+				$cardImg.css('width', '160');
+				$cardImg.css('height', '224');
+			});
+			$cardImg.on('mouseleave', () => {
+				$cardImg.css('width', '80');
+				$cardImg.css('height', '112');
+			});
 		}
 	},
 	assignBlockingDamage() {
@@ -278,7 +311,7 @@ const game = {
 			$('#untap').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "Draw") {
-			$('h2').remove();
+			$('#welcome').remove();
 			this.turnPlayer.draw();
 			this.message("Press the button to move to the next phase.");
 			$('#untap').css("border", "none");
@@ -320,7 +353,7 @@ const game = {
 			this.assignUnblockedDamage();
 			this.checkLethalDamage();
 			if(this.inactivePlayer.life > 0) {
-				this.message(this.inactivePlayer + " lost " + this.currentLifeLost + ". Press the button to move to the next phase.");
+				this.message(this.inactivePlayer.name + " lost " + this.currentLifeLost + " life. Press the button to move to the next phase.");
 			}
 			$('#block').css("border", "none");
 			$('#damage').css("border", "3px solid steelblue");
@@ -398,11 +431,11 @@ const player1 = {
 			$cardImg.attr("id","hand" + i);
 			$('#handDisplay').append($cardImg);
 			player1.hand[i].zone = "Hand";	
-			$cardImg.on('mouseenter', (e) => {
+			$cardImg.on('mouseenter', () => {
 				$cardImg.css('width', '160');
 				$cardImg.css('height', '224');
 			});
-			$cardImg.on('mouseleave', (e) => {
+			$cardImg.on('mouseleave', () => {
 				$cardImg.css('width', '80');
 				$cardImg.css('height', '112');
 			});
@@ -432,11 +465,11 @@ const player2 = {
 			$cardImg.attr("id","hand" + i);
 			$('#handDisplay').append($cardImg);
 			player2.hand[i].zone = "Hand";
-			$cardImg.on('mouseenter', (e) => {
+			$cardImg.on('mouseenter', () => {
 				$cardImg.css('width', '160');
 				$cardImg.css('height', '224');
 			});
-			$cardImg.on('mouseleave', (e) => {
+			$cardImg.on('mouseleave', () => {
 				$cardImg.css('width', '80');
 				$cardImg.css('height', '112');
 			});
@@ -463,12 +496,12 @@ $('#handDisplay').on('click', (e) => {
 	if(card.constructor.name === "Land" && game.landsPlayed === 0 && (game.currentPhase === "Main 1" || game.currentPhase === "Main 2") && game.turnPlayer.name === game.activePlayer.name) {
 		game.landsPlayed ++;
 		card.zone = "Battlefield";
-		const $landImg = $('<img>');
-		$('#activeLandsDisplay').append($landImg);
-		$landImg.attr("src",card.image);
-		$landImg.attr("class","card");
+		const $cardImg = $('<img>');
+		$('#activeLandsDisplay').append($cardImg);
+		$cardImg.attr("src",card.image);
+		$cardImg.attr("class","card");
 		game.activePlayer.lands.push(card);
-		$landImg.attr("id","activeLand" + String(game.activePlayer.lands.length-1));
+		$cardImg.attr("id","activeLand" + String(game.activePlayer.lands.length-1));
 		game.activePlayer.hand.splice(e.target.id.substring(e.target.id.length-1),1);
 		game.activePlayer.showHand();
 		game.activeLands = game.activePlayer.lands;
@@ -539,12 +572,12 @@ $('.mana').on('click', (e) => {
 		game.updateMana();
 		if(game.manaReq[0] === 0 && game.manaReq[1] === 0 && game.manaReq[2] === 0 && game.manaReq[3] === 0 && game.manaReq[4] === 0 && game.manaReq[5] === 0 && game. manaReq[6] === 0) {
 			game.castingCard.zone = "Battlefield";
-			const $creatureImg = $('<img>');
-			$('#activeCreaturesDisplay').append($creatureImg);
-			$creatureImg.attr("src",game.castingCard.image);
-			$creatureImg.attr("class","card");
+			const $cardImg = $('<img>');
+			$('#activeCreaturesDisplay').append($cardImg);
+			$cardImg.attr("src",game.castingCard.image);
+			$cardImg.attr("class","card");
 			game.activePlayer.creatures.push(game.castingCard);
-			$creatureImg.attr("id","activeCreature" + String(game.activePlayer.creatures.length-1));
+			$cardImg.attr("id","activeCreature" + String(game.activePlayer.creatures.length-1));
 			game.activePlayer.hand.splice(game.activePlayer.hand.indexOf(game.castingCard),1);
 			game.activePlayer.showHand();
 			game.castingCard = null;
@@ -643,33 +676,14 @@ $('#hideHand').on('click', () => {
 	}
 })
 
-/********************
-Hover to expand size of card
-********************/
-
-// $('#handDisplay').on('mouseenter', (e) => {
-// 	console.log('mouseenter');
-// 	const $cardImg = $('#hand' + e.target.id.substring(e.target.id.length-1));
-// 	$cardImg.css('width', '160');
-// 	$cardImg.css('height', '224');
-
-// });
-
-// $('#handDisplay').on('mouseleave', (e) => {
-// 	console.log('mouseleave');
-// 	const $cardImg = $('#hand' + e.target.id.substring(e.target.id.length-1));
-// 	$cardImg.css('width', '80');
-// 	$cardImg.css('height', '112');
-// });
-
 game.startGame();
 
-//further steps:
-	//Make it obvious to player when a block has happened/generally make message updates more consistent (replace important console logs with messages)
+//further steps
+	//zoom for lands and creatures on battlefield
 
 //much later
 	//mulligans
-	//add: vigilance; lifelink; trample; first strike; flying
+	//add: haste, vigilance; lifelink; trample; first strike; flying
 	//have creatures go to graveyard when they die
 	//cards to represent libraries
 	//animation to move cards around
