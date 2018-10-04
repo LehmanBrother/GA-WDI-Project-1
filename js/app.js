@@ -382,7 +382,15 @@ const player1 = {
 			$cardImg.attr("class","card hand");
 			$cardImg.attr("id","hand" + i);
 			$('#handDisplay').append($cardImg);
-			player1.hand[i].zone = "Hand";			
+			player1.hand[i].zone = "Hand";	
+			$cardImg.on('mouseenter', (e) => {
+				$cardImg.css('width', '160');
+				$cardImg.css('height', '224');
+			});
+			$cardImg.on('mouseleave', (e) => {
+				$cardImg.css('width', '80');
+				$cardImg.css('height', '112');
+			});
 		}
 	}
 }
@@ -409,6 +417,14 @@ const player2 = {
 			$cardImg.attr("id","hand" + i);
 			$('#handDisplay').append($cardImg);
 			player2.hand[i].zone = "Hand";
+			$cardImg.on('mouseenter', (e) => {
+				$cardImg.css('width', '160');
+				$cardImg.css('height', '224');
+			});
+			$cardImg.on('mouseleave', (e) => {
+				$cardImg.css('width', '80');
+				$cardImg.css('height', '112');
+			});
 		}
 	}
 }
@@ -599,7 +615,20 @@ $('#switchPlayers').on('click', (e) => {
 Hover to expand size of card
 ********************/
 
+// $('#handDisplay').on('mouseenter', (e) => {
+// 	console.log('mouseenter');
+// 	const $cardImg = $('#hand' + e.target.id.substring(e.target.id.length-1));
+// 	$cardImg.css('width', '160');
+// 	$cardImg.css('height', '224');
 
+// });
+
+// $('#handDisplay').on('mouseleave', (e) => {
+// 	console.log('mouseleave');
+// 	const $cardImg = $('#hand' + e.target.id.substring(e.target.id.length-1));
+// 	$cardImg.css('width', '80');
+// 	$cardImg.css('height', '112');
+// });
 
 game.startGame();
 
