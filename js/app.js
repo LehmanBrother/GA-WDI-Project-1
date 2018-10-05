@@ -7,6 +7,7 @@ Game Object
 const game = {
 	turnCounter: 0,
 	turnPlayer: null,
+	nonTurnPlayer: null,
 	activePlayer: null,
 	inactivePlayer: null,
 	activeLands: [],
@@ -40,7 +41,7 @@ const game = {
 		this.shuffleLibrary(player2.library);
 		this.dealHands();
 		$('#inactiveCreaturesDisplay').prepend("<div id='welcome'></div>");
-		$('#welcome').html("<h2>Welcome to Magic: The Gathering! If you don't know how to play, you should probably visit <a href='https://magic.wizards.com/en/gameplay/how-to-play'>this site</a> (focus on the parts about lands, creatures, and combat). Otherwise, click the 'Next Phase' button to start!");
+		$('#welcome').html("<h2>Welcome to Magic: The Gathering! If you don't know how to play, you should probably visit <a href='https://magic.wizards.com/en/gameplay/how-to-play' target='_blank'>this site</a> (focus on the parts about lands, creatures, and combat). Otherwise, click the 'Next Phase' button to start!");
 		this.message("Press the button to move to the next phase.");
 	},
 	shuffleLibrary(library) {
@@ -201,11 +202,11 @@ const game = {
 		for(let i = 0; i < this.unblockedAttackers.length; i++) {
 			this.currentLifeLost += this.unblockedAttackers[i].power;
 		}
-		this.inactivePlayer.life -= this.currentLifeLost;
+		this.nonTurnPlayer.life -= this.currentLifeLost;
 		this.updateLife();
 		this.unblockedAttackers = [];
-		if(this.inactivePlayer.life <= 0) {
-			this.message(this.activePlayer.name + " wins!");
+		if(this.nonTurnPlayer.life <= 0) {
+			this.message(this.turnPlayer.name + " wins!");
 		}
 	},
 	checkLethalDamage() {
@@ -230,10 +231,14 @@ const game = {
 	updateTurnPlayer() {
 		if(this.turnPlayer === player1) {
 			this.turnPlayer = player2;
-			this.turnPlayer.name = "Player 2"
+			this.nonTurnPlayer = player1;
+			this.turnPlayer.name = "Player 2";
+			this.nonTurnPlayer.name = "Player 1";
 		} else {
 			this.turnPlayer = player1;
+			this.nonTurnPlayer = player2;
 			this.turnPlayer.name = "Player 1"
+			this.nonTurnPlayer.name = "Player 2";
 		}
 		$('#turnP').text(this.turnPlayer.name);
 		this.landsPlayed = 0;
@@ -241,7 +246,7 @@ const game = {
 	updateActivePlayer() {
 		if(this.activePlayer === player1) {
 			this.activePlayer = player2;
-			this.activePlayer.name = "Player 2"
+			this.activePlayer.name = "Player 2";
 			this.inactivePlayer = player1;
 			this.inactivePlayer.name = "Player 1";
 		} else {
@@ -355,11 +360,13 @@ const game = {
 			if(this.inactivePlayer.life > 0) {
 				this.message(this.inactivePlayer.name + " lost " + this.currentLifeLost + " life. Press the button to move to the next phase.");
 			}
+			this.currentLifeLost = 0;
 			$('#block').css("border", "none");
 			$('#damage').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "Main 2") {
 			this.attackers = [];
+			this.availableBlockers = [];
 			this.blockingManager = [];
 			for(let i = 0; i < this.activeCreatures.length; i++) {
 				this.activeCreatures[i].isAttacking = false;
@@ -375,10 +382,14 @@ const game = {
 			$('#main2').css("border", "3px solid steelblue");
 		}
 		if(this.currentPhase === "End") {
+			this.damageManager = [];
 			this.message("Press the button to move to the next phase.");
 			$('#main2').css("border", "none");
 			$('#end').css("border", "3px solid steelblue");
 		}
+		this.manaReq = [0,0,0,0,0,0,0];
+		this.activePlayer.manaPool = [0,0,0,0,0,0];
+		this.updateMana();
 		$('#phase').text("Current Phase: " + this.currentPhase);
 	},
 	updateLife() {
@@ -679,7 +690,8 @@ $('#hideHand').on('click', () => {
 game.startGame();
 
 //further steps
-	//zoom for lands and creatures on battlefield
+	//fix zoom for lands and creatures on battlefield
+	//undo tapping lands
 
 //much later
 	//mulligans
