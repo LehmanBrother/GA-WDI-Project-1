@@ -1,6 +1,8 @@
 # Project 1:
 ## Magic: The Gathering
 
+[Link](https://lehmanbrother.github.io/GA-WDI-Project-1/)
+
 ### Overview
 In Magic: The Gathering (original game by Wizards of the Coast), two opposing wizards known as Planeswalkers attempt to reduce each other's life totals to 0. This is achieved by using mana, a magical resource produced by lands, to cast spells and summon creatures to attack the opponent.
 
